@@ -2,9 +2,7 @@
 
 
 # Remove existing files in the destination directories
-rm -f ./target/x86_64-unknown-linux-gnu/release/libanoncreds_uniffi.a || true
-rm -f ./target/x86_64-unknown-linux-gnu/release/libanoncreds_uniffi.d || true
-rm -f ./target/x86_64-unknown-linux-gnu/release/libanoncreds_uniffi.so || true
+rm -r ./target/x86_64-unknown-linux-gnu || true
 rm -f ./wrappers/kotlin/anoncreds/uniffi/anoncreds/anoncreds.kt || true
 
 # Generate code 
