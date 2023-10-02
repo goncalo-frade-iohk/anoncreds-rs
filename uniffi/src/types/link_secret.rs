@@ -2,7 +2,6 @@ use crate::types::error::AnoncredsError;
 use anoncreds_core::data_types::link_secret::LinkSecret as AnoncredsLinkSecret;
 use std::convert::TryFrom;
 use std::convert::TryInto;
-use std::sync::Arc;
 
 pub struct LinkSecret {
     pub secret: AnoncredsLinkSecret,
@@ -76,7 +75,7 @@ mod warp_link_secret_tests {
     use super::*;
 
     #[test]
-    fn should_serialize_and_deserialize_AnoncredsLinkSecret_into_the_same_value() {
+    fn should_serialize_and_deserialize_anoncreds_link_secret_into_the_same_value() {
         let link_secret = AnoncredsLinkSecret::new().expect("Error creating link secret");
         let link_secret_srt: String = link_secret.try_into().expect("Error creating link secret");
         // println!("{}", link_secret_srt);
@@ -88,7 +87,7 @@ mod warp_link_secret_tests {
     }
 
     #[test]
-    fn should_serialize_and_deserialize_LinkSecret_into_the_same_value() {
+    fn should_serialize_and_deserialize_link_secret_into_the_same_value() {
         let link_secret = LinkSecret::new();
         let link_secret_srt: String = link_secret.try_into().expect("Error creating link secret");
         println!("{}", link_secret_srt);

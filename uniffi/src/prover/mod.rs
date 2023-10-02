@@ -1,17 +1,14 @@
-use crate::types::link_secret::LinkSecret;
 use crate::error::AnoncredsError;
-use crate::nonce::Nonce;
+use crate::types::cred_def::CredentialDefinition;
 use crate::types::cred_offer::CredentialOffer;
 use crate::types::cred_req::{CredentialRequest, CredentialRequestMetadata};
-use crate::types::cred_def::{CredentialDefinition, CredentialDefinitionData};
-use crate::Credential;
-use crate::RevocationRegistryDefinition;
-use anoncreds_core::prover::*;
-use anoncreds_core::data_types::cred_request::{CredentialRequest as AnoncredsCredentialRequest, CredentialRequestMetadata as AnoncredsCredentialRequestMetadata};
-use anoncreds_core::types::Credential as AnoncredsCredential;
-use super::types::*;
-use std::sync::Arc;
+use crate::types::link_secret::LinkSecret;
+use crate::{Credential, Presentation};
+use crate::{PresentationRequest, RevocationRegistryDefinition};
+use anoncreds_core::prover;
+use anoncreds_core::types::PresentCredentials as AnoncredsPresentCredentials;
 use std::convert::TryInto;
+use std::sync::Arc;
 
 pub struct CreateCrendentialRequestResponse {
     pub request: Arc<CredentialRequest>,
@@ -42,24 +39,23 @@ impl Prover {
         let cred_def_clone = Arc::clone(&cred_def);
         let cred_def_inner = cred_def_clone.as_ref();
         let cred_def_core = cred_def_inner.clone().try_into()?;
-        let link_secret_core =(*link_secret).clone().secret;
+        let link_secret_core = (*link_secret).clone().secret;
         let cred_offer_core = (*credential_offer).clone().core;
-        
+
         let (request, metadata) = anoncreds_core::prover::create_credential_request(
             entropy.as_ref().map(|s| s.as_str()),
             prover_did.as_ref().map(|s| s.as_str()),
             &cred_def_core,
             &link_secret_core,
             link_secret_id.as_str(),
-            &cred_offer_core
-        ).map_err(|err| {
-            AnoncredsError::CreateCrentialRequestError(format!("Error: {}", err))
-        })?;
+            &cred_offer_core,
+        )
+        .map_err(|err| AnoncredsError::CreateCrentialRequestError(format!("Error: {}", err)))?;
 
         return Ok(CreateCrendentialRequestResponse {
             request: Arc::new(CredentialRequest { core: request }),
-            metadata: CredentialRequestMetadata::from(metadata)
-        })
+            metadata: CredentialRequestMetadata::from(metadata),
+        });
     }
 
     pub fn process_credential(
@@ -70,15 +66,41 @@ impl Prover {
         cred_def: Arc<CredentialDefinition>,
         rev_reg_def: Option<Arc<RevocationRegistryDefinition>>,
     ) -> Result<(), AnoncredsError> {
-        let mut mutable_credential = (*credential).core.try_clone().map_err(|_| AnoncredsError::ConversionError)?;
-        process_credential(
+        let mut mutable_credential = (*credential)
+            .core
+            .try_clone()
+            .map_err(|_| AnoncredsError::ConversionError)?;
+        prover::process_credential(
             &mut mutable_credential,
             &cred_request_metadata.into(),
             &(*link_secret).secret,
             &(*cred_def).core,
-            rev_reg_def.as_ref().map(|def| &(*def).core)
-        ).map_err(|err| {
-            AnoncredsError::ProcessCredential(format!("Error: {}", err))
-        })
+            rev_reg_def.as_ref().map(|def| &(*def).core),
+        )
+        .map_err(|err| AnoncredsError::ProcessCredential(format!("Error: {}", err)))
+    }
+
+    //TODO
+    pub fn create_presentation(
+        &self,
+        presentation_request: Arc<PresentationRequest>,
+        credentials: Arc<AnoncredsPresentCredentials>,
+        //     self_attested: Option<HashMap<String, String>>,
+        //     link_secret: &LinkSecret,
+        //     schemas: &HashMap<&SchemaId, &Schema>,
+        //     cred_defs: &HashMap<&CredentialDefinitionId, &CredentialDefinition>,
+    ) -> Result<(), AnoncredsError> {
+        // ) -> Result<Presentation, AnoncredsError> {
+        // let ret = prover::create_presentation(
+        //     pres_req: &PresentationRequest,
+        //     credentials: PresentCredentials,
+        //     self_attested: Option<HashMap<String, String>>,
+        //     link_secret: &LinkSecret,
+        //     schemas: &HashMap<&SchemaId, &Schema>,
+        //     cred_defs: &HashMap<&CredentialDefinitionId, &CredentialDefinition>,
+        // ).map_err(|err| AnoncredsError::CreatePresentationError(format!("Error: {}", err)))
+
+        // return ret;
+        return Ok(());
     }
 }
