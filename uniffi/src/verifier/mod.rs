@@ -53,6 +53,5 @@ impl Verifier {
         .map_err(|err| AnoncredsError::ProcessCredentialError(format!("Error: {}", err)))?;
 
         return Ok(ret);
-        // return Ok(true);
     }
 }
