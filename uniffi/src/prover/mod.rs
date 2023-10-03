@@ -3,10 +3,16 @@ use crate::types::cred_def::CredentialDefinition;
 use crate::types::cred_offer::CredentialOffer;
 use crate::types::cred_req::{CredentialRequest, CredentialRequestMetadata};
 use crate::types::link_secret::LinkSecret;
+use crate::PresentationRequest;
+use crate::RevocationRegistryDefinition;
 use crate::{Credential, Presentation};
-use crate::{PresentationRequest, RevocationRegistryDefinition};
+use anoncreds_core::data_types::cred_def::{
+    CredentialDefinition as AnoncredsCredentialDefinition, CredentialDefinitionId,
+};
+use anoncreds_core::data_types::schema::{Schema, SchemaId};
 use anoncreds_core::prover;
 use anoncreds_core::types::PresentCredentials as AnoncredsPresentCredentials;
+use std::collections::HashMap;
 use std::convert::TryInto;
 use std::sync::Arc;
 
@@ -80,27 +86,44 @@ impl Prover {
         .map_err(|err| AnoncredsError::ProcessCredential(format!("Error: {}", err)))
     }
 
-    //TODO
     pub fn create_presentation(
         &self,
         presentation_request: Arc<PresentationRequest>,
-        credentials: Arc<AnoncredsPresentCredentials>,
-        //     self_attested: Option<HashMap<String, String>>,
-        //     link_secret: &LinkSecret,
-        //     schemas: &HashMap<&SchemaId, &Schema>,
-        //     cred_defs: &HashMap<&CredentialDefinitionId, &CredentialDefinition>,
-    ) -> Result<(), AnoncredsError> {
-        // ) -> Result<Presentation, AnoncredsError> {
-        // let ret = prover::create_presentation(
-        //     pres_req: &PresentationRequest,
-        //     credentials: PresentCredentials,
-        //     self_attested: Option<HashMap<String, String>>,
-        //     link_secret: &LinkSecret,
-        //     schemas: &HashMap<&SchemaId, &Schema>,
-        //     cred_defs: &HashMap<&CredentialDefinitionId, &CredentialDefinition>,
-        // ).map_err(|err| AnoncredsError::CreatePresentationError(format!("Error: {}", err)))
+        credentials: Vec<Arc<Credential>>,
+        self_attested: Option<HashMap<String, String>>,
+        link_secret: Arc<LinkSecret>,
+        schemas: HashMap<SchemaId, Schema>,
+        credential_definitions: HashMap<CredentialDefinitionId, Arc<CredentialDefinition>>,
+    ) -> Result<Arc<Presentation>, AnoncredsError> {
+        let pres_req = &presentation_request.core;
 
-        // return ret;
-        return Ok(());
+        let mut present_credentials = AnoncredsPresentCredentials::default();
+        let timestamp = None; // TODO
+        let rev_state = None; //TODO
+
+        credentials.iter().for_each(|c| {
+            let cred = &c.core;
+            present_credentials.add_credential(cred, timestamp, rev_state);
+        });
+
+        let schemas_anoncreds = schemas.iter().map(|(k, v)| (k, v)).collect();
+        let cred_defs = credential_definitions
+            .iter()
+            .map(|(k, v)| {
+                let tmp = &v.core;
+                (k, tmp)
+            })
+            .collect();
+
+        return prover::create_presentation(
+            pres_req,
+            present_credentials,
+            self_attested,
+            &link_secret.secret,
+            &schemas_anoncreds,
+            &cred_defs,
+        )
+        .map_err(|err| AnoncredsError::CreatePresentationError(format!("Error: {}", err)))
+        .map(|e| Arc::new(Presentation { core: e }));
     }
 }

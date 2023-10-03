@@ -307,8 +307,13 @@ interface Prover {
   );
 
   [Throws=AnoncredsError]
-  void create_presentation(
-    PresentationRequest presentation_request
+  Presentation create_presentation(
+    PresentationRequest presentation_request,
+    sequence<Credential> credentials,
+    record<string, string>? self_attested,
+    LinkSecret link_secret,
+    record<SchemaId, Schema> schemas,
+    record<CredentialDefinitionId, CredentialDefinition> credential_definitions
   );
 
   LinkSecret create_link_secret();
@@ -317,6 +322,8 @@ interface Prover {
 interface Presentation {
   [Throws=AnoncredsError]
   constructor(string json_string);
+  [Throws=AnoncredsError]
+  string get_json();
 };
 
 interface PresentationRequest {
