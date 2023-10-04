@@ -29,4 +29,8 @@ impl PresentationRequest {
             serde_json::from_str(&json_string).map_err(|_| AnoncredsError::ConversionError)?;
         return Ok(PresentationRequest { core: core_def });
     }
+
+    pub fn get_json(&self) -> Result<String, AnoncredsError> {
+        serde_json::to_string(&self.core).map_err(|_| AnoncredsError::ConversionError)
+    }
 }

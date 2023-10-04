@@ -329,6 +329,8 @@ interface Presentation {
 interface PresentationRequest {
   [Throws=AnoncredsError]
   constructor(string json_string);
+  [Throws=AnoncredsError]
+  string get_json();
 };
 
 interface Verifier {

@@ -6,9 +6,7 @@ use crate::types::link_secret::LinkSecret;
 use crate::PresentationRequest;
 use crate::RevocationRegistryDefinition;
 use crate::{Credential, Presentation};
-use anoncreds_core::data_types::cred_def::{
-    CredentialDefinition as AnoncredsCredentialDefinition, CredentialDefinitionId,
-};
+use anoncreds_core::data_types::cred_def::CredentialDefinitionId;
 use anoncreds_core::data_types::schema::{Schema, SchemaId};
 use anoncreds_core::prover;
 use anoncreds_core::types::PresentCredentials as AnoncredsPresentCredentials;
