@@ -309,7 +309,7 @@ interface Prover {
   [Throws=AnoncredsError]
   Presentation create_presentation(
     PresentationRequest presentation_request,
-    sequence<Credential> credentials,
+    sequence<CredentialRequests> credentials,
     record<string, string>? self_attested,
     LinkSecret link_secret,
     record<SchemaId, Schema> schemas,
@@ -317,6 +317,19 @@ interface Prover {
   );
 
   LinkSecret create_link_secret();
+};
+
+dictionary RequestedAttribute {
+    string referent;
+    boolean revealed;
+};
+dictionary RequestedPredicate {
+    string referent;
+};
+dictionary CredentialRequests {
+    Credential credential;
+    sequence<RequestedAttribute> requested_attribute;
+    sequence<RequestedPredicate> requested_predicate;
 };
 
 interface Presentation {

@@ -19,6 +19,19 @@ pub struct CreateCrendentialRequestResponse {
     pub metadata: CredentialRequestMetadata,
 }
 
+pub struct RequestedAttribute {
+    pub referent: String,
+    pub revealed: bool,
+}
+pub struct RequestedPredicate {
+    pub referent: String,
+}
+pub struct CredentialRequests {
+    pub credential: Arc<Credential>,
+    pub requested_attribute: Vec<RequestedAttribute>,
+    pub requested_predicate: Vec<RequestedPredicate>,
+}
+
 pub struct Prover {}
 
 impl Prover {
@@ -87,7 +100,7 @@ impl Prover {
     pub fn create_presentation(
         &self,
         presentation_request: Arc<PresentationRequest>,
-        credentials: Vec<Arc<Credential>>,
+        credentials: Vec<CredentialRequests>,
         self_attested: Option<HashMap<String, String>>,
         link_secret: Arc<LinkSecret>,
         schemas: HashMap<SchemaId, Schema>,
@@ -100,8 +113,16 @@ impl Prover {
         let rev_state = None; //TODO
 
         credentials.iter().for_each(|c| {
-            let cred = &c.core;
-            present_credentials.add_credential(cred, timestamp, rev_state);
+            let cred = &c.credential.core;
+            let mut tmp = present_credentials.add_credential(cred, timestamp, rev_state);
+
+            c.requested_attribute.iter().for_each(|attribute| {
+                tmp.add_requested_attribute(attribute.referent.to_string(), attribute.revealed);
+            });
+
+            c.requested_predicate.iter().for_each(|predicate| {
+                tmp.add_requested_predicate(predicate.referent.to_string());
+            });
         });
 
         let schemas_anoncreds = schemas.iter().map(|(k, v)| (k, v)).collect();
