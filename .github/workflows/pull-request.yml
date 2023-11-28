@@ -40,6 +40,10 @@ jobs:
         working-directory: ./anoncred-kmm
         run: ./gradlew ktlintCheck
 
+      - name: Check bin files
+        working-directory: ./anoncred-kmm
+        run: ./gradlew :anoncred-wrapper-rust:printFiles
+
       - name: Install Homebrew
         run: >
           /bin/bash -c "$(curl -fsSL
