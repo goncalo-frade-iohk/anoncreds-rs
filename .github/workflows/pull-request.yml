@@ -53,12 +53,9 @@ jobs:
         run: |
           brew tap messense/macos-cross-toolchains
 
-      - name: "Brew Linking issue fix"
-        run: |
-          rm '/usr/local/bin/2to3'
-
       - name: "Install Linux GNU for x86_64"
         run: |
+          rm '/usr/local/bin/2to3'
           rm '/usr/local/bin/python3'
           rm '/usr/local/bin/python3.11'
           rm '/usr/local/bin/2to3-3.11'
@@ -66,6 +63,7 @@ jobs:
           rm '/usr/local/bin/idle3.11'
           rm '/usr/local/bin/pydoc3'
           rm '/usr/local/bin/pydoc3.11'
+          rm '/usr/local/bin/python3-config'
           brew install --overwrite x86_64-unknown-linux-gnu
 
       - name: "Install Linux GNU for aarch64"
