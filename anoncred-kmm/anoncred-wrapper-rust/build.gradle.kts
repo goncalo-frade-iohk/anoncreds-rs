@@ -183,7 +183,7 @@ val buildAnonCredWrapperForAndroidX8664 by tasks.register<Exec>("buildAnonCredWr
     description = "Build and compile AnonCred Wrapper for Android X86_64"
     val localEnv = this.environment
     localEnv += mapOf(
-        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP",
+        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP:$TOOLCHAIN/bin/",
         "ANDROID_SDK" to ANDROID_SDK,
         "NDK" to NDK,
         "TOOLCHAIN" to TOOLCHAIN,
@@ -205,7 +205,7 @@ val buildAnonCredWrapperForAndroidArch64 by tasks.register<Exec>("buildAnonCredW
     description = "Build and compile AnonCred Wrapper for Android arch64"
     val localEnv = this.environment
     localEnv += mapOf(
-        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP",
+        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP:$TOOLCHAIN/bin/",
         "ANDROID_SDK" to ANDROID_SDK,
         "NDK" to NDK,
         "TOOLCHAIN" to TOOLCHAIN,
@@ -231,7 +231,7 @@ val buildAnonCredWrapperForAndroidI686 by tasks.register<Exec>("buildAnonCredWra
     description = "Build and compile AnonCred Wrapper for Android I686"
     val localEnv = this.environment
     localEnv += mapOf(
-        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP",
+        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP:$TOOLCHAIN/bin/",
         "ANDROID_SDK" to ANDROID_SDK,
         "NDK" to NDK,
         "TOOLCHAIN" to TOOLCHAIN,
@@ -253,7 +253,7 @@ val buildAnonCredWrapperForAndroidArmv7a by tasks.register<Exec>("buildAnonCredW
     description = "Build and compile AnonCred Wrapper for Android Armv7a"
     val localEnv = this.environment
     localEnv += mapOf(
-        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP",
+        "PATH" to "${environment["PATH"]}:$TOOLCHAIN:$AR:$CC:$CXX:$LD:$RANLIB:$STRIP:$TOOLCHAIN/bin/",
         "ANDROID_SDK" to ANDROID_SDK,
         "NDK" to NDK,
         "TOOLCHAIN" to TOOLCHAIN,
