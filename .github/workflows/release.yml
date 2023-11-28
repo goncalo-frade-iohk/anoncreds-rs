@@ -1,3 +1,4 @@
+---
 name: "Release Libraries"
 
 env:
@@ -95,19 +96,32 @@ jobs:
 
       - name: "Install Linux GNU for x86_64"
         run: |
-          brew install x86_64-unknown-linux-gnu
+          rm '/usr/local/bin/2to3'
+          rm '/usr/local/bin/python3'
+          rm '/usr/local/bin/python3.11'
+          rm '/usr/local/bin/2to3-3.11'
+          rm '/usr/local/bin/idle3'
+          rm '/usr/local/bin/idle3.11'
+          rm '/usr/local/bin/pydoc3'
+          rm '/usr/local/bin/pydoc3.11'
+          rm '/usr/local/bin/python3-config'
+          rm '/usr/local/bin/python3.11-config'
+          brew install --overwrite x86_64-unknown-linux-gnu
 
       - name: "Install Linux GNU for aarch64"
         run: |
-          brew install aarch64-unknown-linux-gnu
-
-      - name: "Install Rust"
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+          brew install --overwrite aarch64-unknown-linux-gnu
 
       - name: "Install Rust Targets"
         run: |
-          rustup target add armv7-linux-androideabi & rustup target add i686-linux-android & rustup target add aarch64-linux-android & rustup target add x86_64-linux-android & rustup target add aarch64-apple-darwin & rustup target add x86_64-apple-darwin & rustup target add aarch64-unknown-linux-gnu & rustup target add x86_64-unknown-linux-gnu
+          rustup target add armv7-linux-androideabi
+          rustup target add i686-linux-android
+          rustup target add aarch64-linux-android
+          rustup target add x86_64-linux-android
+          rustup target add aarch64-apple-darwin
+          rustup target add x86_64-apple-darwin
+          rustup target add aarch64-unknown-linux-gnu
+          rustup target add x86_64-unknown-linux-gnu
 
       - name: "Install Rust Cargo NDK"
         run: |
@@ -117,7 +131,6 @@ jobs:
         working-directory: ./anoncred-kmm
         run: |
           ./gradlew :anoncreds-kmp:publishAllPublicationsToGitHubPackagesRepository
-
 
   build-release:
     needs: [build-swift-package, build-kmp]
