@@ -17,7 +17,7 @@ fun getNDKOSVariant(): String {
 
 val minAndroidVersion: Int = 21
 val ANDROID_SDK = System.getenv("ANDROID_HOME")
-val NDK = System.getenv("ANDROID_NDK")
+val NDK = System.getenv("ANDROID_NDK_HOME")
 val TOOLCHAIN = "$NDK/toolchains/llvm/prebuilt/${getNDKOSVariant()}"
 val AR = "$TOOLCHAIN/bin/llvm-ar"
 val CC = "$TOOLCHAIN/bin/aarch64-linux-android$minAndroidVersion-clang"
@@ -260,9 +260,6 @@ val buildAnonCredWrapperForAndroidUniversal by tasks.register("buildAnonCredWrap
 val buildAnonCredWrapper by tasks.register("buildAnonCredWrapper") {
     group = "rust-compiling"
     description = "Build and compile AnonCred Wrapper"
-    doFirst {
-        moveRustSrcFiles
-    }
     dependsOn(buildAnonCredWrapperForMacOSUniversal, buildAnonCredWrapperForLinuxUniversal, buildAnonCredWrapperForAndroidUniversal) // buildAnonCredWrapperForiOSUniversal
 }
 
@@ -599,7 +596,7 @@ val requiredInstallation by tasks.register("RequiredInstallation") {
 
 val deleteRustSrcFiles by tasks.register<Delete>("deleteRustSrcFiles") {
     group = "rust"
-    project.delete(
+    delete(
         fileTree(rootDir.resolve("anoncred-wrapper-rust").resolve("src"))
     )
 }
