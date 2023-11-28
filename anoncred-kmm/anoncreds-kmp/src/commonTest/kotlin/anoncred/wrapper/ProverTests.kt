@@ -1,4 +1,4 @@
-package io.iohk.atala.prism.anoncred
+package anoncred.wrapper
 
 import anoncreds_wrapper.CredentialDefinitionConfig
 import anoncreds_wrapper.Issuer
@@ -9,22 +9,22 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @AndroidIgnore
-class PrismProverTests {
+class ProverTests {
     @Test
-    fun test_PrismProver_createLinkSecret() {
-        val prismProver = Prover()
-        val linkSecret = prismProver.createLinkSecret()
+    fun test_Prover_createLinkSecret() {
+        val prover = Prover()
+        val linkSecret = prover.createLinkSecret()
         println(linkSecret.getBigNumber())
         println(linkSecret.getValue())
         assertTrue(linkSecret.getBigNumber().length > 0)
     }
 
     @Test
-    fun test_PrismProver_createCredentialRequest() {
-        val prismIssuer = Issuer()
+    fun test_Prover_createCredentialRequest() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -32,15 +32,15 @@ class PrismProverTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val credentialOffer = prismIssuer.createCredentialOffer(
+        val credentialOffer = issuer.createCredentialOffer(
             "did:web:xyz/resource/schema",
             "did:web:xyz/resource/cred-def",
             cred.credentialKeyCorrectnessProof
         )
 
-        val prismProver = Prover()
-        val linkSecret = prismProver.createLinkSecret()
-        val credentialRequest = prismProver.createCredentialRequest(
+        val prover = Prover()
+        val linkSecret = prover.createLinkSecret()
+        val credentialRequest = prover.createCredentialRequest(
             "entropy",
             null,
             cred.credentialDefinition,

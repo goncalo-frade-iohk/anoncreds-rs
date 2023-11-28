@@ -1,4 +1,4 @@
-package io.iohk.atala.prism.anoncred
+package anoncred.wrapper
 
 enum class Platform {
     Linux,

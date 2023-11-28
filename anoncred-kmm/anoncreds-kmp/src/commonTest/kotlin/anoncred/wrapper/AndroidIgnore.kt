@@ -1,4 +1,4 @@
-package io.iohk.atala.prism.anoncred
+package anoncred.wrapper
 
 /**
  * Ignore Unit tests on Android Platform

@@ -1,39 +1,40 @@
-package io.iohk.atala.prism.anoncred
+package com.example.testapp
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import anoncreds_wrapper.AttributeValues
 import anoncreds_wrapper.CredentialDefinitionConfig
 import anoncreds_wrapper.Issuer
-import anoncreds_wrapper.Nonce
 import anoncreds_wrapper.Prover
 import anoncreds_wrapper.RegistryType
 import anoncreds_wrapper.Schema
 import anoncreds_wrapper.SignatureType
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
 
-@AndroidIgnore
-class PrismIssuerTests {
+@RunWith(AndroidJUnit4::class)
+class IssuerTests {
     @Test
-    fun test_PrismIssuer_createSchema() {
+    fun test_Issuer_createSchema() {
         val expectedSchema = Schema("Moussa", "1.0", listOf("name", "age"), "sample:uri")
         val scheme: Schema = Issuer().createSchema("Moussa", "1.0", "sample:uri", listOf("name", "age"))
-        assertEquals(expectedSchema, scheme, "scheme not equal")
-        assertEquals(expectedSchema.name, scheme.name, "name not correct")
-        assertEquals(expectedSchema.version, scheme.version, "version not correct")
-        assertEquals(expectedSchema.issuerId, scheme.issuerId, "issuerId not correct")
-        assertEquals(expectedSchema.attrNames.size, scheme.attrNames.size, "attrNames size is not correct")
+        assertEquals("scheme not equal", expectedSchema, scheme)
+        assertEquals("name not correct", expectedSchema.name, scheme.name)
+        assertEquals("version not correct", expectedSchema.version, scheme.version)
+        assertEquals("issuerId not correct", expectedSchema.issuerId, scheme.issuerId)
+        assertEquals("attrNames size is not correct", expectedSchema.attrNames.size, scheme.attrNames.size)
         expectedSchema.attrNames.forEach {
             assertTrue(scheme.attrNames.contains(it))
         }
     }
 
     @Test
-    fun test_PrismIssuer_createCredentialDefinition() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_createCredentialDefinition() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
-        val schema: Schema = prismIssuer.createSchema("Moussa", "1.0", "sample:uri", attributeNames)
-        val cred = prismIssuer.createCredentialDefinition(
+        val schema: Schema = issuer.createSchema("Moussa", "1.0", "sample:uri", attributeNames)
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -48,11 +49,11 @@ class PrismIssuerTests {
     }
 
     @Test
-    fun test_PrismIssuer_createRevocationRegistryDef() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_createRevocationRegistryDef() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -60,7 +61,7 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val rev = prismIssuer.createRevocationRegistryDef(
+        val rev = issuer.createRevocationRegistryDef(
             cred.credentialDefinition,
             "did:web:xyz/resource/cred-def",
             "did:web:xyz",
@@ -75,11 +76,11 @@ class PrismIssuerTests {
     }
 
     @Test
-    fun test_PrismIssuer_createRevocationStatusList() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_createRevocationStatusList() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -87,7 +88,7 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val rev = prismIssuer.createRevocationRegistryDef(
+        val rev = issuer.createRevocationRegistryDef(
             cred.credentialDefinition,
             "did:web:xyz/resource/cred-def",
             "did:web:xyz",
@@ -95,7 +96,7 @@ class PrismIssuerTests {
             RegistryType.CL_ACCUM,
             1000u
         )
-        val revStatusList = prismIssuer.createRevocationStatusList(
+        val revStatusList = issuer.createRevocationStatusList(
             "did:web:xyz/resource/rev-reg-def",
             rev.regDef,
             "did:web:xyz",
@@ -107,11 +108,11 @@ class PrismIssuerTests {
     }
 
     @Test
-    fun test_PrismIssuer_updateRevocationStatusListTimestampOnly() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_updateRevocationStatusListTimestampOnly() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -119,7 +120,7 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val rev = prismIssuer.createRevocationRegistryDef(
+        val rev = issuer.createRevocationRegistryDef(
             cred.credentialDefinition,
             "did:web:xyz/resource/cred-def",
             "did:web:xyz",
@@ -127,24 +128,24 @@ class PrismIssuerTests {
             RegistryType.CL_ACCUM,
             1000u
         )
-        val revStatusList = prismIssuer.createRevocationStatusList(
+        val revStatusList = issuer.createRevocationStatusList(
             "did:web:xyz/resource/rev-reg-def",
             rev.regDef,
             "did:web:xyz",
             null,
             true
         )
-        val updatedRevStatusList = prismIssuer.updateRevocationStatusListTimestampOnly(1000u, revStatusList)
+        val updatedRevStatusList = issuer.updateRevocationStatusListTimestampOnly(1000u, revStatusList)
         println(updatedRevStatusList.getJson())
         assertTrue(true)
     }
 
     @Test
-    fun test_PrismIssuer_updateRevocationStatusList() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_updateRevocationStatusList() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -152,7 +153,7 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val rev = prismIssuer.createRevocationRegistryDef(
+        val rev = issuer.createRevocationRegistryDef(
             cred.credentialDefinition,
             "did:web:xyz/resource/cred-def",
             "did:web:xyz",
@@ -160,26 +161,24 @@ class PrismIssuerTests {
             RegistryType.CL_ACCUM,
             1000u
         )
-        val revStatusList = prismIssuer.createRevocationStatusList(
+        val revStatusList = issuer.createRevocationStatusList(
             "did:web:xyz/resource/rev-reg-def",
             rev.regDef,
             "did:web:xyz",
             null,
             true
         )
-        val updatedRevStatusList = prismIssuer.updateRevocationStatusList(null, listOf(1u), null, rev.regDef, revStatusList)
+        val updatedRevStatusList = issuer.updateRevocationStatusList(null, listOf(1u), null, rev.regDef, revStatusList)
         println(updatedRevStatusList.getJson())
         assertTrue(true)
-        Nonce().toString()
-        Nonce()
     }
 
     @Test
-    fun test_PrismIssuer_createCredentialOffer() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_createCredentialOffer() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -187,17 +186,17 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val credentialOffer = prismIssuer.createCredentialOffer("did:web:xyz/resource/schema", "did:web:xyz/resource/cred-def", cred.credentialKeyCorrectnessProof)
+        val credentialOffer = issuer.createCredentialOffer("did:web:xyz/resource/schema", "did:web:xyz/resource/cred-def", cred.credentialKeyCorrectnessProof)
         println(credentialOffer.getJson())
         assertTrue(true)
     }
 
     @Test
-    fun test_PrismIssuer_createCredential() {
-        val prismIssuer = Issuer()
+    fun test_Issuer_createCredential() {
+        val issuer = Issuer()
         val attributeNames = listOf("name", "age")
         val schema = Schema("Moussa", "1.0", attributeNames, "sample:uri")
-        val cred = prismIssuer.createCredentialDefinition(
+        val cred = issuer.createCredentialDefinition(
             "did:web:xyz/resource/schema",
             schema,
             "did:web:xyz",
@@ -205,12 +204,12 @@ class PrismIssuerTests {
             SignatureType.CL,
             CredentialDefinitionConfig(true)
         )
-        val credentialOffer = prismIssuer.createCredentialOffer("did:web:xyz/resource/schema", "did:web:xyz/resource/cred-def", cred.credentialKeyCorrectnessProof)
-        val prismProver = Prover()
-        val linkSecret = prismProver.createLinkSecret()
-        val credentialRequest = prismProver.createCredentialRequest("entropy", null, cred.credentialDefinition, linkSecret, "my-secret-id", credentialOffer)
+        val credentialOffer = issuer.createCredentialOffer("did:web:xyz/resource/schema", "did:web:xyz/resource/cred-def", cred.credentialKeyCorrectnessProof)
+        val prover = Prover()
+        val linkSecret = prover.createLinkSecret()
+        val credentialRequest = prover.createCredentialRequest("entropy", null, cred.credentialDefinition, linkSecret, "my-secret-id", credentialOffer)
         val credentialValues = listOf(AttributeValues("name", "Moussa"))
-        val credential = prismIssuer.createCredential(
+        val credential = issuer.createCredential(
             cred.credentialDefinition,
             cred.credentialDefinitionPrivate,
             credentialOffer,
