@@ -8,4 +8,5 @@ pub mod verifier;
 
 pub mod utils {
     pub use super::helpers::encode_credential_attribute;
+    pub use super::helpers::new_nonce;
 }
