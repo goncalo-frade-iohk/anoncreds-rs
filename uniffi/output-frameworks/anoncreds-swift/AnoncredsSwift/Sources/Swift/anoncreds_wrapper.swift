@@ -5,8 +5,8 @@ import Foundation
 // Depending on the consumer's build setup, the low-level FFI code
 // might be in a separate module, or it might be compiled inline into
 // this module. This is a bit of light hackery to work with both.
-#if canImport(anoncredsFFI)
-    import anoncredsFFI
+#if canImport(anoncreds_wrapperFFI)
+    import anoncreds_wrapperFFI
 #endif
 
 private extension RustBuffer {
@@ -19,13 +19,13 @@ private extension RustBuffer {
     }
 
     static func from(_ ptr: UnsafeBufferPointer<UInt8>) -> RustBuffer {
-        try! rustCall { ffi_anoncreds_rustbuffer_from_bytes(ForeignBytes(bufferPointer: ptr), $0) }
+        try! rustCall { ffi_anoncreds_wrapper_rustbuffer_from_bytes(ForeignBytes(bufferPointer: ptr), $0) }
     }
 
     // Frees the buffer in place.
     // The buffer must not be used after this is called.
     func deallocate() {
-        try! rustCall { ffi_anoncreds_rustbuffer_free(self, $0) }
+        try! rustCall { ffi_anoncreds_wrapper_rustbuffer_free(self, $0) }
     }
 }
 
@@ -403,21 +403,21 @@ public class Credential: CredentialProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credential_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credential_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credential(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credential(pointer, $0) }
     }
 
     public func getSchemaId() -> SchemaId {
         return try! FfiConverterTypeSchemaId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_schema_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_schema_id(self.pointer, $0)
                 }
         )
     }
@@ -426,7 +426,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterTypeCredentialDefinitionId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_cred_def_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_cred_def_id(self.pointer, $0)
                 }
         )
     }
@@ -435,7 +435,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterOptionTypeRevocationRegistryId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_rev_reg_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_rev_reg_id(self.pointer, $0)
                 }
         )
     }
@@ -444,7 +444,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterTypeCredentialValues.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_values(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_values(self.pointer, $0)
                 }
         )
     }
@@ -453,7 +453,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_signature_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_signature_json(self.pointer, $0)
                 }
         )
     }
@@ -462,7 +462,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_signature_correctness_proof_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_signature_correctness_proof_json(self.pointer, $0)
                 }
         )
     }
@@ -471,7 +471,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterOptionString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_rev_reg_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_rev_reg_json(self.pointer, $0)
                 }
         )
     }
@@ -480,7 +480,7 @@ public class Credential: CredentialProtocol {
         return try! FfiConverterOptionString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credential_get_witness_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credential_get_witness_json(self.pointer, $0)
                 }
         )
     }
@@ -488,7 +488,7 @@ public class Credential: CredentialProtocol {
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credential_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credential_get_json(self.pointer, $0)
             }
         )
     }
@@ -552,21 +552,21 @@ public class CredentialDefinition: CredentialDefinitionProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credentialdefinition_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credentialdefinition_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credentialdefinition(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credentialdefinition(pointer, $0) }
     }
 
     public func getSchemaId() -> SchemaId {
         return try! FfiConverterTypeSchemaId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialdefinition_get_schema_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialdefinition_get_schema_id(self.pointer, $0)
                 }
         )
     }
@@ -575,7 +575,7 @@ public class CredentialDefinition: CredentialDefinitionProtocol {
         return try! FfiConverterTypeSignatureType.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialdefinition_get_signature_type(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialdefinition_get_signature_type(self.pointer, $0)
                 }
         )
     }
@@ -584,7 +584,7 @@ public class CredentialDefinition: CredentialDefinitionProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialdefinition_get_tag(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialdefinition_get_tag(self.pointer, $0)
                 }
         )
     }
@@ -593,7 +593,7 @@ public class CredentialDefinition: CredentialDefinitionProtocol {
         return try! FfiConverterTypeIssuerId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialdefinition_get_issuer_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialdefinition_get_issuer_id(self.pointer, $0)
                 }
         )
     }
@@ -601,7 +601,7 @@ public class CredentialDefinition: CredentialDefinitionProtocol {
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credentialdefinition_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credentialdefinition_get_json(self.pointer, $0)
             }
         )
     }
@@ -661,20 +661,20 @@ public class CredentialDefinitionPrivate: CredentialDefinitionPrivateProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credentialdefinitionprivate_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credentialdefinitionprivate_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credentialdefinitionprivate(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credentialdefinitionprivate(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credentialdefinitionprivate_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credentialdefinitionprivate_get_json(self.pointer, $0)
             }
         )
     }
@@ -734,20 +734,20 @@ public class CredentialKeyCorrectnessProof: CredentialKeyCorrectnessProofProtoco
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credentialkeycorrectnessproof_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credentialkeycorrectnessproof_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credentialkeycorrectnessproof(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credentialkeycorrectnessproof(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credentialkeycorrectnessproof_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credentialkeycorrectnessproof_get_json(self.pointer, $0)
             }
         )
     }
@@ -812,21 +812,21 @@ public class CredentialOffer: CredentialOfferProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credentialoffer_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credentialoffer_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credentialoffer(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credentialoffer(pointer, $0) }
     }
 
     public func getSchemaId() -> SchemaId {
         return try! FfiConverterTypeSchemaId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialoffer_get_schema_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_schema_id(self.pointer, $0)
                 }
         )
     }
@@ -835,7 +835,7 @@ public class CredentialOffer: CredentialOfferProtocol {
         return try! FfiConverterTypeCredentialDefinitionId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialoffer_get_cred_def_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_cred_def_id(self.pointer, $0)
                 }
         )
     }
@@ -844,7 +844,7 @@ public class CredentialOffer: CredentialOfferProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialoffer_get_key_correctness_proof(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_key_correctness_proof(self.pointer, $0)
                 }
         )
     }
@@ -853,7 +853,7 @@ public class CredentialOffer: CredentialOfferProtocol {
         return try! FfiConverterTypeNonce.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialoffer_get_nonce(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_nonce(self.pointer, $0)
                 }
         )
     }
@@ -862,7 +862,7 @@ public class CredentialOffer: CredentialOfferProtocol {
         return try! FfiConverterOptionString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialoffer_get_method_name(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_method_name(self.pointer, $0)
                 }
         )
     }
@@ -870,7 +870,7 @@ public class CredentialOffer: CredentialOfferProtocol {
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credentialoffer_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credentialoffer_get_json(self.pointer, $0)
             }
         )
     }
@@ -933,21 +933,21 @@ public class CredentialRequest: CredentialRequestProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_credentialrequest_new(
+            uniffi_anoncreds_wrapper_fn_constructor_credentialrequest_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_credentialrequest(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_credentialrequest(pointer, $0) }
     }
 
     public func getBlindedCredentialSecretsJson() -> String {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialrequest_get_blinded_credential_secrets_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialrequest_get_blinded_credential_secrets_json(self.pointer, $0)
                 }
         )
     }
@@ -956,7 +956,7 @@ public class CredentialRequest: CredentialRequestProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialrequest_get_blinded_credential_secrets_correctness_proof_json(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialrequest_get_blinded_credential_secrets_correctness_proof_json(self.pointer, $0)
                 }
         )
     }
@@ -965,7 +965,7 @@ public class CredentialRequest: CredentialRequestProtocol {
         return try! FfiConverterTypeNonce.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_credentialrequest_get_nonce(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_credentialrequest_get_nonce(self.pointer, $0)
                 }
         )
     }
@@ -973,7 +973,7 @@ public class CredentialRequest: CredentialRequestProtocol {
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_credentialrequest_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_credentialrequest_get_json(self.pointer, $0)
             }
         )
     }
@@ -1040,22 +1040,22 @@ public class Issuer: IssuerProtocol {
 
     public convenience init() {
         self.init(unsafeFromRawPointer: try! rustCall {
-            uniffi_anoncreds_fn_constructor_issuer_new($0)
+            uniffi_anoncreds_wrapper_fn_constructor_issuer_new($0)
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_issuer(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_issuer(pointer, $0) }
     }
 
     public func createSchema(schemaName: String, schemaVersion: String, issuerId: String, attrNames: [String]) throws -> Schema {
         return try FfiConverterTypeSchema.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_schema(self.pointer,
-                                                                FfiConverterString.lower(schemaName),
-                                                                FfiConverterString.lower(schemaVersion),
-                                                                FfiConverterString.lower(issuerId),
-                                                                FfiConverterSequenceString.lower(attrNames), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_schema(self.pointer,
+                                                                        FfiConverterString.lower(schemaName),
+                                                                        FfiConverterString.lower(schemaVersion),
+                                                                        FfiConverterString.lower(issuerId),
+                                                                        FfiConverterSequenceString.lower(attrNames), $0)
             }
         )
     }
@@ -1063,13 +1063,13 @@ public class Issuer: IssuerProtocol {
     public func createCredentialDefinition(schemaId: String, schema: Schema, issuerId: String, tag: String, signatureType: SignatureType, config: CredentialDefinitionConfig) throws -> IssuerCreateCredentialDefinitionReturn {
         return try FfiConverterTypeIssuerCreateCredentialDefinitionReturn.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_credential_definition(self.pointer,
-                                                                               FfiConverterString.lower(schemaId),
-                                                                               FfiConverterTypeSchema.lower(schema),
-                                                                               FfiConverterString.lower(issuerId),
-                                                                               FfiConverterString.lower(tag),
-                                                                               FfiConverterTypeSignatureType.lower(signatureType),
-                                                                               FfiConverterTypeCredentialDefinitionConfig.lower(config), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_credential_definition(self.pointer,
+                                                                                       FfiConverterString.lower(schemaId),
+                                                                                       FfiConverterTypeSchema.lower(schema),
+                                                                                       FfiConverterString.lower(issuerId),
+                                                                                       FfiConverterString.lower(tag),
+                                                                                       FfiConverterTypeSignatureType.lower(signatureType),
+                                                                                       FfiConverterTypeCredentialDefinitionConfig.lower(config), $0)
             }
         )
     }
@@ -1077,13 +1077,13 @@ public class Issuer: IssuerProtocol {
     public func createRevocationRegistryDef(credDef: CredentialDefinition, credDefId: String, issuerId: String, tag: String, revRegType: RegistryType, maxCredNum: UInt32) throws -> IssuerCreateRevocationRegistryDefReturn {
         return try FfiConverterTypeIssuerCreateRevocationRegistryDefReturn.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_revocation_registry_def(self.pointer,
-                                                                                 FfiConverterTypeCredentialDefinition.lower(credDef),
-                                                                                 FfiConverterString.lower(credDefId),
-                                                                                 FfiConverterString.lower(issuerId),
-                                                                                 FfiConverterString.lower(tag),
-                                                                                 FfiConverterTypeRegistryType.lower(revRegType),
-                                                                                 FfiConverterUInt32.lower(maxCredNum), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_revocation_registry_def(self.pointer,
+                                                                                         FfiConverterTypeCredentialDefinition.lower(credDef),
+                                                                                         FfiConverterString.lower(credDefId),
+                                                                                         FfiConverterString.lower(issuerId),
+                                                                                         FfiConverterString.lower(tag),
+                                                                                         FfiConverterTypeRegistryType.lower(revRegType),
+                                                                                         FfiConverterUInt32.lower(maxCredNum), $0)
             }
         )
     }
@@ -1091,12 +1091,12 @@ public class Issuer: IssuerProtocol {
     public func createRevocationStatusList(revRegDefId: String, revRegDef: RevocationRegistryDefinition, issuerId: String, timestamp: UInt64?, issuanceByDefault: Bool) throws -> RevocationStatusList {
         return try FfiConverterTypeRevocationStatusList.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_revocation_status_list(self.pointer,
-                                                                                FfiConverterString.lower(revRegDefId),
-                                                                                FfiConverterTypeRevocationRegistryDefinition.lower(revRegDef),
-                                                                                FfiConverterString.lower(issuerId),
-                                                                                FfiConverterOptionUInt64.lower(timestamp),
-                                                                                FfiConverterBool.lower(issuanceByDefault), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_revocation_status_list(self.pointer,
+                                                                                        FfiConverterString.lower(revRegDefId),
+                                                                                        FfiConverterTypeRevocationRegistryDefinition.lower(revRegDef),
+                                                                                        FfiConverterString.lower(issuerId),
+                                                                                        FfiConverterOptionUInt64.lower(timestamp),
+                                                                                        FfiConverterBool.lower(issuanceByDefault), $0)
             }
         )
     }
@@ -1105,9 +1105,9 @@ public class Issuer: IssuerProtocol {
         return try! FfiConverterTypeRevocationStatusList.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_issuer_update_revocation_status_list_timestamp_only(self.pointer,
-                                                                                                   FfiConverterUInt64.lower(timestamp),
-                                                                                                   FfiConverterTypeRevocationStatusList.lower(currentList), $0)
+                    uniffi_anoncreds_wrapper_fn_method_issuer_update_revocation_status_list_timestamp_only(self.pointer,
+                                                                                                           FfiConverterUInt64.lower(timestamp),
+                                                                                                           FfiConverterTypeRevocationStatusList.lower(currentList), $0)
                 }
         )
     }
@@ -1115,12 +1115,12 @@ public class Issuer: IssuerProtocol {
     public func updateRevocationStatusList(timestamp: UInt64?, issued: [UInt32]?, revoked: [UInt32]?, revRegDef: RevocationRegistryDefinition, currentList: RevocationStatusList) throws -> RevocationStatusList {
         return try FfiConverterTypeRevocationStatusList.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_update_revocation_status_list(self.pointer,
-                                                                                FfiConverterOptionUInt64.lower(timestamp),
-                                                                                FfiConverterOptionSequenceUInt32.lower(issued),
-                                                                                FfiConverterOptionSequenceUInt32.lower(revoked),
-                                                                                FfiConverterTypeRevocationRegistryDefinition.lower(revRegDef),
-                                                                                FfiConverterTypeRevocationStatusList.lower(currentList), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_update_revocation_status_list(self.pointer,
+                                                                                        FfiConverterOptionUInt64.lower(timestamp),
+                                                                                        FfiConverterOptionSequenceUInt32.lower(issued),
+                                                                                        FfiConverterOptionSequenceUInt32.lower(revoked),
+                                                                                        FfiConverterTypeRevocationRegistryDefinition.lower(revRegDef),
+                                                                                        FfiConverterTypeRevocationStatusList.lower(currentList), $0)
             }
         )
     }
@@ -1128,10 +1128,10 @@ public class Issuer: IssuerProtocol {
     public func createCredentialOffer(schemaId: String, credDefId: String, correctnessProof: CredentialKeyCorrectnessProof) throws -> CredentialOffer {
         return try FfiConverterTypeCredentialOffer.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_credential_offer(self.pointer,
-                                                                          FfiConverterString.lower(schemaId),
-                                                                          FfiConverterString.lower(credDefId),
-                                                                          FfiConverterTypeCredentialKeyCorrectnessProof.lower(correctnessProof), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_credential_offer(self.pointer,
+                                                                                  FfiConverterString.lower(schemaId),
+                                                                                  FfiConverterString.lower(credDefId),
+                                                                                  FfiConverterTypeCredentialKeyCorrectnessProof.lower(correctnessProof), $0)
             }
         )
     }
@@ -1139,15 +1139,15 @@ public class Issuer: IssuerProtocol {
     public func createCredential(credDef: CredentialDefinition, credDefPrivate: CredentialDefinitionPrivate, credOffer: CredentialOffer, credRequest: CredentialRequest, credValues: [AttributeValues], revRegId: RevocationRegistryId?, revStatusList: RevocationStatusList?, revocationConfig: CredentialRevocationConfig?) throws -> Credential {
         return try FfiConverterTypeCredential.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_issuer_create_credential(self.pointer,
-                                                                    FfiConverterTypeCredentialDefinition.lower(credDef),
-                                                                    FfiConverterTypeCredentialDefinitionPrivate.lower(credDefPrivate),
-                                                                    FfiConverterTypeCredentialOffer.lower(credOffer),
-                                                                    FfiConverterTypeCredentialRequest.lower(credRequest),
-                                                                    FfiConverterSequenceTypeAttributeValues.lower(credValues),
-                                                                    FfiConverterOptionTypeRevocationRegistryId.lower(revRegId),
-                                                                    FfiConverterOptionTypeRevocationStatusList.lower(revStatusList),
-                                                                    FfiConverterOptionTypeCredentialRevocationConfig.lower(revocationConfig), $0)
+                uniffi_anoncreds_wrapper_fn_method_issuer_create_credential(self.pointer,
+                                                                            FfiConverterTypeCredentialDefinition.lower(credDef),
+                                                                            FfiConverterTypeCredentialDefinitionPrivate.lower(credDefPrivate),
+                                                                            FfiConverterTypeCredentialOffer.lower(credOffer),
+                                                                            FfiConverterTypeCredentialRequest.lower(credRequest),
+                                                                            FfiConverterSequenceTypeAttributeValues.lower(credValues),
+                                                                            FfiConverterOptionTypeRevocationRegistryId.lower(revRegId),
+                                                                            FfiConverterOptionTypeRevocationStatusList.lower(revStatusList),
+                                                                            FfiConverterOptionTypeCredentialRevocationConfig.lower(revocationConfig), $0)
             }
         )
     }
@@ -1208,17 +1208,17 @@ public class LinkSecret: LinkSecretProtocol {
 
     public convenience init() {
         self.init(unsafeFromRawPointer: try! rustCall {
-            uniffi_anoncreds_fn_constructor_linksecret_new($0)
+            uniffi_anoncreds_wrapper_fn_constructor_linksecret_new($0)
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_linksecret(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_linksecret(pointer, $0) }
     }
 
     public static func newFromValue(valueString: String) throws -> LinkSecret {
         return try LinkSecret(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_linksecret_new_from_value(
+            uniffi_anoncreds_wrapper_fn_constructor_linksecret_new_from_value(
                 FfiConverterString.lower(valueString), $0
             )
         })
@@ -1228,7 +1228,7 @@ public class LinkSecret: LinkSecretProtocol {
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_linksecret_get_big_number(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_linksecret_get_big_number(self.pointer, $0)
                 }
         )
     }
@@ -1236,7 +1236,7 @@ public class LinkSecret: LinkSecretProtocol {
     public func getValue() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_linksecret_get_value(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_linksecret_get_value(self.pointer, $0)
             }
         )
     }
@@ -1296,17 +1296,17 @@ public class Nonce: NonceProtocol {
 
     public convenience init() {
         self.init(unsafeFromRawPointer: try! rustCall {
-            uniffi_anoncreds_fn_constructor_nonce_new($0)
+            uniffi_anoncreds_wrapper_fn_constructor_nonce_new($0)
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_nonce(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_nonce(pointer, $0) }
     }
 
     public static func newFromValue(valueString: String) throws -> Nonce {
         return try Nonce(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_nonce_new_from_value(
+            uniffi_anoncreds_wrapper_fn_constructor_nonce_new_from_value(
                 FfiConverterString.lower(valueString), $0
             )
         })
@@ -1315,7 +1315,7 @@ public class Nonce: NonceProtocol {
     public func getValue() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_nonce_get_value(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_nonce_get_value(self.pointer, $0)
             }
         )
     }
@@ -1375,20 +1375,20 @@ public class Presentation: PresentationProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_presentation_new(
+            uniffi_anoncreds_wrapper_fn_constructor_presentation_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_presentation(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_presentation(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_presentation_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_presentation_get_json(self.pointer, $0)
             }
         )
     }
@@ -1448,20 +1448,20 @@ public class PresentationRequest: PresentationRequestProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_presentationrequest_new(
+            uniffi_anoncreds_wrapper_fn_constructor_presentationrequest_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_presentationrequest(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_presentationrequest(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_presentationrequest_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_presentationrequest_get_json(self.pointer, $0)
             }
         )
     }
@@ -1507,7 +1507,7 @@ public func FfiConverterTypePresentationRequest_lower(_ value: PresentationReque
 
 public protocol ProverProtocol {
     func createCredentialRequest(entropy: String?, proverDid: String?, credDef: CredentialDefinition, linkSecret: LinkSecret, linkSecretId: String, credentialOffer: CredentialOffer) throws -> CreateCrendentialRequestResponse
-    func processCredential(credential: Credential, credRequestMetadata: CredentialRequestMetadata, linkSecret: LinkSecret, credDef: CredentialDefinition, revRegDef: RevocationRegistryDefinition?) throws
+    func processCredential(credential: Credential, credRequestMetadata: CredentialRequestMetadata, linkSecret: LinkSecret, credDef: CredentialDefinition, revRegDef: RevocationRegistryDefinition?) throws -> Credential
     func createPresentation(presentationRequest: PresentationRequest, credentials: [CredentialRequests], selfAttested: [String: String]?, linkSecret: LinkSecret, schemas: [SchemaId: Schema], credentialDefinitions: [CredentialDefinitionId: CredentialDefinition]) throws -> Presentation
     func createLinkSecret() -> LinkSecret
 }
@@ -1524,50 +1524,51 @@ public class Prover: ProverProtocol {
 
     public convenience init() {
         self.init(unsafeFromRawPointer: try! rustCall {
-            uniffi_anoncreds_fn_constructor_prover_new($0)
+            uniffi_anoncreds_wrapper_fn_constructor_prover_new($0)
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_prover(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_prover(pointer, $0) }
     }
 
     public func createCredentialRequest(entropy: String?, proverDid: String?, credDef: CredentialDefinition, linkSecret: LinkSecret, linkSecretId: String, credentialOffer: CredentialOffer) throws -> CreateCrendentialRequestResponse {
         return try FfiConverterTypeCreateCrendentialRequestResponse.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_prover_create_credential_request(self.pointer,
-                                                                            FfiConverterOptionString.lower(entropy),
-                                                                            FfiConverterOptionString.lower(proverDid),
-                                                                            FfiConverterTypeCredentialDefinition.lower(credDef),
-                                                                            FfiConverterTypeLinkSecret.lower(linkSecret),
-                                                                            FfiConverterString.lower(linkSecretId),
-                                                                            FfiConverterTypeCredentialOffer.lower(credentialOffer), $0)
+                uniffi_anoncreds_wrapper_fn_method_prover_create_credential_request(self.pointer,
+                                                                                    FfiConverterOptionString.lower(entropy),
+                                                                                    FfiConverterOptionString.lower(proverDid),
+                                                                                    FfiConverterTypeCredentialDefinition.lower(credDef),
+                                                                                    FfiConverterTypeLinkSecret.lower(linkSecret),
+                                                                                    FfiConverterString.lower(linkSecretId),
+                                                                                    FfiConverterTypeCredentialOffer.lower(credentialOffer), $0)
             }
         )
     }
 
-    public func processCredential(credential: Credential, credRequestMetadata: CredentialRequestMetadata, linkSecret: LinkSecret, credDef: CredentialDefinition, revRegDef: RevocationRegistryDefinition?) throws {
-        try
+    public func processCredential(credential: Credential, credRequestMetadata: CredentialRequestMetadata, linkSecret: LinkSecret, credDef: CredentialDefinition, revRegDef: RevocationRegistryDefinition?) throws -> Credential {
+        return try FfiConverterTypeCredential.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_prover_process_credential(self.pointer,
-                                                                     FfiConverterTypeCredential.lower(credential),
-                                                                     FfiConverterTypeCredentialRequestMetadata.lower(credRequestMetadata),
-                                                                     FfiConverterTypeLinkSecret.lower(linkSecret),
-                                                                     FfiConverterTypeCredentialDefinition.lower(credDef),
-                                                                     FfiConverterOptionTypeRevocationRegistryDefinition.lower(revRegDef), $0)
+                uniffi_anoncreds_wrapper_fn_method_prover_process_credential(self.pointer,
+                                                                             FfiConverterTypeCredential.lower(credential),
+                                                                             FfiConverterTypeCredentialRequestMetadata.lower(credRequestMetadata),
+                                                                             FfiConverterTypeLinkSecret.lower(linkSecret),
+                                                                             FfiConverterTypeCredentialDefinition.lower(credDef),
+                                                                             FfiConverterOptionTypeRevocationRegistryDefinition.lower(revRegDef), $0)
             }
+        )
     }
 
     public func createPresentation(presentationRequest: PresentationRequest, credentials: [CredentialRequests], selfAttested: [String: String]?, linkSecret: LinkSecret, schemas: [SchemaId: Schema], credentialDefinitions: [CredentialDefinitionId: CredentialDefinition]) throws -> Presentation {
         return try FfiConverterTypePresentation.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_prover_create_presentation(self.pointer,
-                                                                      FfiConverterTypePresentationRequest.lower(presentationRequest),
-                                                                      FfiConverterSequenceTypeCredentialRequests.lower(credentials),
-                                                                      FfiConverterOptionDictionaryStringString.lower(selfAttested),
-                                                                      FfiConverterTypeLinkSecret.lower(linkSecret),
-                                                                      FfiConverterDictionaryTypeSchemaIdTypeSchema.lower(schemas),
-                                                                      FfiConverterDictionaryTypeCredentialDefinitionIdTypeCredentialDefinition.lower(credentialDefinitions), $0)
+                uniffi_anoncreds_wrapper_fn_method_prover_create_presentation(self.pointer,
+                                                                              FfiConverterTypePresentationRequest.lower(presentationRequest),
+                                                                              FfiConverterSequenceTypeCredentialRequests.lower(credentials),
+                                                                              FfiConverterOptionDictionaryStringString.lower(selfAttested),
+                                                                              FfiConverterTypeLinkSecret.lower(linkSecret),
+                                                                              FfiConverterDictionaryTypeSchemaIdTypeSchema.lower(schemas),
+                                                                              FfiConverterDictionaryTypeCredentialDefinitionIdTypeCredentialDefinition.lower(credentialDefinitions), $0)
             }
         )
     }
@@ -1576,7 +1577,7 @@ public class Prover: ProverProtocol {
         return try! FfiConverterTypeLinkSecret.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_prover_create_link_secret(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_prover_create_link_secret(self.pointer, $0)
                 }
         )
     }
@@ -1640,21 +1641,21 @@ public class RevocationRegistryDefinition: RevocationRegistryDefinitionProtocol 
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_revocationregistrydefinition_new(
+            uniffi_anoncreds_wrapper_fn_constructor_revocationregistrydefinition_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_revocationregistrydefinition(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_revocationregistrydefinition(pointer, $0) }
     }
 
     public func getIssuerId() -> IssuerId {
         return try! FfiConverterTypeIssuerId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinition_get_issuer_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinition_get_issuer_id(self.pointer, $0)
                 }
         )
     }
@@ -1663,7 +1664,7 @@ public class RevocationRegistryDefinition: RevocationRegistryDefinitionProtocol 
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinition_get_tag(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinition_get_tag(self.pointer, $0)
                 }
         )
     }
@@ -1672,7 +1673,7 @@ public class RevocationRegistryDefinition: RevocationRegistryDefinitionProtocol 
         return try! FfiConverterTypeCredentialDefinitionId.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinition_get_cred_def_id(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinition_get_cred_def_id(self.pointer, $0)
                 }
         )
     }
@@ -1681,7 +1682,7 @@ public class RevocationRegistryDefinition: RevocationRegistryDefinitionProtocol 
         return try! FfiConverterTypeRevocationRegistryDefinitionValue.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinition_get_value(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinition_get_value(self.pointer, $0)
                 }
         )
     }
@@ -1689,7 +1690,7 @@ public class RevocationRegistryDefinition: RevocationRegistryDefinitionProtocol 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_revocationregistrydefinition_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinition_get_json(self.pointer, $0)
             }
         )
     }
@@ -1749,20 +1750,20 @@ public class RevocationRegistryDefinitionPrivate: RevocationRegistryDefinitionPr
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_revocationregistrydefinitionprivate_new(
+            uniffi_anoncreds_wrapper_fn_constructor_revocationregistrydefinitionprivate_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_revocationregistrydefinitionprivate(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_revocationregistrydefinitionprivate(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_revocationregistrydefinitionprivate_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionprivate_get_json(self.pointer, $0)
             }
         )
     }
@@ -1825,21 +1826,21 @@ public class RevocationRegistryDefinitionValue: RevocationRegistryDefinitionValu
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_revocationregistrydefinitionvalue_new(
+            uniffi_anoncreds_wrapper_fn_constructor_revocationregistrydefinitionvalue_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_revocationregistrydefinitionvalue(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_revocationregistrydefinitionvalue(pointer, $0) }
     }
 
     public func getMaxCredNum() -> UInt32 {
         return try! FfiConverterUInt32.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinitionvalue_get_max_cred_num(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionvalue_get_max_cred_num(self.pointer, $0)
                 }
         )
     }
@@ -1848,7 +1849,7 @@ public class RevocationRegistryDefinitionValue: RevocationRegistryDefinitionValu
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinitionvalue_get_tails_hash(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionvalue_get_tails_hash(self.pointer, $0)
                 }
         )
     }
@@ -1857,7 +1858,7 @@ public class RevocationRegistryDefinitionValue: RevocationRegistryDefinitionValu
         return try! FfiConverterString.lift(
             try!
                 rustCall {
-                    uniffi_anoncreds_fn_method_revocationregistrydefinitionvalue_get_tails_location(self.pointer, $0)
+                    uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionvalue_get_tails_location(self.pointer, $0)
                 }
         )
     }
@@ -1865,7 +1866,7 @@ public class RevocationRegistryDefinitionValue: RevocationRegistryDefinitionValu
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_revocationregistrydefinitionvalue_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionvalue_get_json(self.pointer, $0)
             }
         )
     }
@@ -1925,20 +1926,20 @@ public class RevocationRegistryDefinitionValuePublicKeys: RevocationRegistryDefi
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_revocationregistrydefinitionvaluepublickeys_new(
+            uniffi_anoncreds_wrapper_fn_constructor_revocationregistrydefinitionvaluepublickeys_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_revocationregistrydefinitionvaluepublickeys(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_revocationregistrydefinitionvaluepublickeys(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_revocationregistrydefinitionvaluepublickeys_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_revocationregistrydefinitionvaluepublickeys_get_json(self.pointer, $0)
             }
         )
     }
@@ -1998,20 +1999,20 @@ public class RevocationStatusList: RevocationStatusListProtocol {
 
     public convenience init(jsonString: String) throws {
         try self.init(unsafeFromRawPointer: rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-            uniffi_anoncreds_fn_constructor_revocationstatuslist_new(
+            uniffi_anoncreds_wrapper_fn_constructor_revocationstatuslist_new(
                 FfiConverterString.lower(jsonString), $0
             )
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_revocationstatuslist(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_revocationstatuslist(pointer, $0) }
     }
 
     public func getJson() throws -> String {
         return try FfiConverterString.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_revocationstatuslist_get_json(self.pointer, $0)
+                uniffi_anoncreds_wrapper_fn_method_revocationstatuslist_get_json(self.pointer, $0)
             }
         )
     }
@@ -2071,22 +2072,22 @@ public class Verifier: VerifierProtocol {
 
     public convenience init() {
         self.init(unsafeFromRawPointer: try! rustCall {
-            uniffi_anoncreds_fn_constructor_verifier_new($0)
+            uniffi_anoncreds_wrapper_fn_constructor_verifier_new($0)
         })
     }
 
     deinit {
-        try! rustCall { uniffi_anoncreds_fn_free_verifier(pointer, $0) }
+        try! rustCall { uniffi_anoncreds_wrapper_fn_free_verifier(pointer, $0) }
     }
 
     public func verifyPresentation(presentation: Presentation, presentationRequest: PresentationRequest, schemas: [SchemaId: Schema], credentialDefinitions: [CredentialDefinitionId: CredentialDefinition]) throws -> Bool {
         return try FfiConverterBool.lift(
             rustCallWithError(FfiConverterTypeAnoncredsError.lift) {
-                uniffi_anoncreds_fn_method_verifier_verify_presentation(self.pointer,
-                                                                        FfiConverterTypePresentation.lower(presentation),
-                                                                        FfiConverterTypePresentationRequest.lower(presentationRequest),
-                                                                        FfiConverterDictionaryTypeSchemaIdTypeSchema.lower(schemas),
-                                                                        FfiConverterDictionaryTypeCredentialDefinitionIdTypeCredentialDefinition.lower(credentialDefinitions), $0)
+                uniffi_anoncreds_wrapper_fn_method_verifier_verify_presentation(self.pointer,
+                                                                                FfiConverterTypePresentation.lower(presentation),
+                                                                                FfiConverterTypePresentationRequest.lower(presentationRequest),
+                                                                                FfiConverterDictionaryTypeSchemaIdTypeSchema.lower(schemas),
+                                                                                FfiConverterDictionaryTypeCredentialDefinitionIdTypeCredentialDefinition.lower(credentialDefinitions), $0)
             }
         )
     }
@@ -3456,7 +3457,7 @@ private var initializationResult: InitializationResult {
     // Get the bindings contract version from our ComponentInterface
     let bindings_contract_version = 22
     // Get the scaffolding contract version by calling the into the dylib
-    let scaffolding_contract_version = ffi_anoncreds_uniffi_contract_version()
+    let scaffolding_contract_version = ffi_anoncreds_wrapper_uniffi_contract_version()
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
@@ -3610,7 +3611,7 @@ private var initializationResult: InitializationResult {
     if uniffi__checksum_method_prover_create_credential_request() != 26116 {
         return InitializationResult.apiChecksumMismatch
     }
-    if uniffi__checksum_method_prover_process_credential() != 64866 {
+    if uniffi__checksum_method_prover_process_credential() != 2160 {
         return InitializationResult.apiChecksumMismatch
     }
     if uniffi__checksum_method_prover_create_presentation() != 47751 {

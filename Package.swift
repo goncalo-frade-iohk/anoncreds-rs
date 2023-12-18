@@ -17,11 +17,11 @@ let package = Package(
     targets: [
         .target(
             name: "AnoncredsSwift",
-            dependencies: ["anoncredsFFI"],
+            dependencies: ["anoncreds_wrapperFFI"],
             path: "uniffi/output-frameworks/anoncreds-swift/AnoncredsSwift/Sources/Swift"
         ),
         .target(
-            name: "anoncredsFFI",
+            name: "anoncreds_wrapperFFI",
             dependencies: ["libanoncreds"],
             path: "uniffi/output-frameworks/anoncreds-swift/AnoncredsSwift/Sources/C"),
         // LOCAL
@@ -32,8 +32,8 @@ let package = Package(
         // RELEASE
         .binaryTarget(
             name: "libanoncreds",
-            url: "https://github.com/input-output-hk/anoncreds-rs/releases/download/0.3.4/libanoncreds.xcframework.zip",
-            checksum: "a69576058b0e72d4c74bde8650b99417228aff31063cfac3553264d5cd3b23d7"
+            url: "https://github.com/input-output-hk/anoncreds-rs/releases/download/0.4.0/libanoncreds.xcframework.zip",
+            checksum: "2cbb147f58dd4d59990c1fc01302e63aafd63673b64310946420893f639b1f67"
         )
     ]
 )
