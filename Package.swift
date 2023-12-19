@@ -32,8 +32,8 @@ let package = Package(
         // RELEASE
         .binaryTarget(
             name: "libanoncreds",
-            url: "https://github.com/input-output-hk/anoncreds-rs/releases/download/0.4.0/libanoncreds.xcframework.zip",
-            checksum: "2cbb147f58dd4d59990c1fc01302e63aafd63673b64310946420893f639b1f67"
+            url: "https://github.com/input-output-hk/anoncreds-rs/releases/download/0.4.1/libanoncreds.xcframework.zip",
+            checksum: "85a67c56a4c6480975c631c122091381c3bfe74d3b3102f77da2cb0d71841873"
         )
     ]
 )
