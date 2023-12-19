@@ -23,7 +23,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir("src/main/uniffi/anoncreds")
+            srcDir("src/main/uniffi/anoncreds_wrapper")
         }
     }
 }
