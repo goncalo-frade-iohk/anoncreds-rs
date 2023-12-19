@@ -11,7 +11,7 @@ plugins {
 }
 
 apply(plugin = "kotlinx-atomicfu")
-version = "0.3.4"
+version = "0.4.0"
 group = "io.iohk.atala.prism.anoncredskmp"
 
 fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
