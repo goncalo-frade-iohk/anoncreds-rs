@@ -142,10 +142,14 @@ dictionary CredentialRevocationConfig {
     u32 registry_idx;
 };
 
-dictionary CredentialRequestMetadata {
-    string link_secret_blinding_data;
-    Nonce nonce;
-    string link_secret_name;
+interface CredentialRequestMetadata {
+    [Throws=AnoncredsError]
+    constructor(string json_string);
+    [Throws=AnoncredsError]
+    string get_json();
+    string get_link_secret_blinding_data();
+    Nonce get_nonce();
+    string get_link_secret_name();
 };
 
 dictionary CreateCrendentialRequestResponse {

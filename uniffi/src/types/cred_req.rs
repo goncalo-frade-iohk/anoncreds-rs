@@ -32,44 +32,29 @@ impl CredentialRequest {
 }
 
 pub struct CredentialRequestMetadata {
-    pub link_secret_blinding_data: String,
-    pub nonce: Arc<Nonce>,
-    pub link_secret_name: String,
+    pub core: AnoncredsCredentialRequestMetadata
 }
 
-// impl CredentialRequestMetadata {
-//     pub fn new(json_string: String) -> Result<Self, AnoncredsError> {
-//         let core_def: AnoncredsCredentialRequest =
-//             serde_json::from_str(&json_string).map_err(|_| AnoncredsError::ConversionError)?;
-//         return Ok(CredentialRequestMetadata { core: core_def });
-//     }
-
-//     pub fn get_json(&self) -> Result<String, AnoncredsError> {
-//         serde_json::to_string(&self.core).map_err(|_| AnoncredsError::ConversionError)
-//     }
-// }
-
-impl Into<AnoncredsCredentialRequestMetadata> for CredentialRequestMetadata {
-    fn into(self) -> AnoncredsCredentialRequestMetadata {
-        let link_secret_core: ursa::cl::CredentialSecretsBlindingFactors = serde_json::from_str(&self.link_secret_blinding_data).unwrap();
-        let nonce_unwrap = (*self.nonce).clone();
-        let nonce_core = nonce_unwrap.anoncreds_nonce;
-        AnoncredsCredentialRequestMetadata {
-            link_secret_blinding_data: link_secret_core,
-            nonce: nonce_core,
-            link_secret_name: self.link_secret_name
-        }
+impl CredentialRequestMetadata {
+    pub fn new(json_string: String) -> Result<Self, AnoncredsError> {
+        let core_def: AnoncredsCredentialRequestMetadata =
+            serde_json::from_str(&json_string).map_err(|err| AnoncredsError::ConversionError(err.to_string()))?;
+        return Ok(CredentialRequestMetadata { core: core_def });
     }
-}
 
-impl From<AnoncredsCredentialRequestMetadata> for CredentialRequestMetadata {
-    fn from(acr: AnoncredsCredentialRequestMetadata) -> Self {
-        let link_secret_blinding_data_str = serde_json::to_string(&acr.link_secret_blinding_data).expect("Failed to serialize link_secret_blinding_data");
-        let nonce_core = Arc::new(Nonce { anoncreds_nonce: acr.nonce});
-        return CredentialRequestMetadata {
-            link_secret_blinding_data: link_secret_blinding_data_str,
-            nonce: nonce_core,
-            link_secret_name: acr.link_secret_name
-        }
+    pub fn get_json(&self) -> Result<String, AnoncredsError> {
+        serde_json::to_string(&self.core).map_err(|err| AnoncredsError::ConversionError(err.to_string()))
+    }
+
+    pub fn get_link_secret_blinding_data(&self) -> String {
+        serde_json::to_string(&self.core.link_secret_blinding_data).unwrap()
+    }
+
+    pub fn get_link_secret_name(&self) -> String {
+        serde_json::to_string(&self.core.link_secret_name).unwrap()
+    }
+
+    pub fn get_nonce(&self) -> Arc<Nonce> {
+        return Arc::new(Nonce { anoncreds_nonce: self.core.nonce.try_clone().unwrap() })
     }
 }

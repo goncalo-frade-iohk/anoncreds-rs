@@ -16,7 +16,7 @@ use std::sync::Arc;
 
 pub struct CreateCrendentialRequestResponse {
     pub request: Arc<CredentialRequest>,
-    pub metadata: CredentialRequestMetadata,
+    pub metadata: Arc<CredentialRequestMetadata>,
 }
 
 pub struct RequestedAttribute {
@@ -71,14 +71,14 @@ impl Prover {
 
         return Ok(CreateCrendentialRequestResponse {
             request: Arc::new(CredentialRequest { core: request }),
-            metadata: CredentialRequestMetadata::from(metadata),
+            metadata:Arc::new(CredentialRequestMetadata { core: metadata}),
         });
     }
 
     pub fn process_credential(
         &self,
         credential: Arc<Credential>,
-        cred_request_metadata: CredentialRequestMetadata,
+        cred_request_metadata: Arc<CredentialRequestMetadata>,
         link_secret: Arc<LinkSecret>,
         cred_def: Arc<CredentialDefinition>,
         rev_reg_def: Option<Arc<RevocationRegistryDefinition>>,
@@ -89,7 +89,7 @@ impl Prover {
             .map_err(|err| AnoncredsError::ConversionError(err.to_string()))?;
         prover::process_credential(
             &mut mutable_credential,
-            &cred_request_metadata.into(),
+            &(*cred_request_metadata).core,
             &(*link_secret).secret,
             &(*cred_def).core,
             rev_reg_def.as_ref().map(|def| &(*def).core),
