@@ -242,7 +242,7 @@ publishing {
 android {
     ndkVersion = "26.0.10792818"
     compileSdk = 33
-    namespace = "anoncredskmp"
+    namespace = "io.iohk.atala.prism.anoncredskmp"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     sourceSets["main"].jniLibs {

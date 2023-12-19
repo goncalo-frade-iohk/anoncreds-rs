@@ -2,6 +2,7 @@ package anoncred.wrapper
 
 import anoncreds_wrapper.CredentialDefinitionConfig
 import anoncreds_wrapper.Issuer
+import anoncreds_wrapper.PresentationRequest
 import anoncreds_wrapper.Prover
 import anoncreds_wrapper.Schema
 import anoncreds_wrapper.SignatureType
@@ -50,5 +51,33 @@ class ProverTests {
         )
         println(credentialRequest)
         assertTrue(true)
+    }
+
+    @Test
+    fun test_presentation_request_parsing() {
+        val presentationRequestJson = """
+            {
+            "requested_attributes":{
+            "attribute_1":{
+            "name":"name",
+            "restrictions":[
+
+            ]
+            }
+            },
+            "requested_predicates":{
+
+            },
+            "name":"presentation_request_1",
+            "nonce":"1177620373658433495312997",
+            "version":"0.1"
+        }
+        """
+        val presentationRequest = PresentationRequest(presentationRequestJson)
+        presentationRequest.getRequestedAttributes().forEach {
+            println(it.key)
+            println(it.value.toString())
+        }
+        println(presentationRequest.getRequestedPredicates())
     }
 }

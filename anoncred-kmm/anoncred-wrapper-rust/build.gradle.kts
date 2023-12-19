@@ -633,3 +633,42 @@ val buildRust by tasks.register("buildRust") {
     mustRunAfter(moveRustSrcFiles)
     dependsOn(moveRustSrcFiles, requiredInstallation, verifyRust, copyBindings, copyAnoncredsBinariesToProcessedResources)
 }
+
+afterEvaluate {
+    tasks.named("buildAnonCredWrapperForAndroidX86_64") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForAndroidArmv7a") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForAndroidArch64") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForAndroidI686") {
+        dependsOn(moveRustSrcFiles)
+    }
+
+    tasks.named("buildAnonCredWrapperForLinuxArch64") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForLinuxX86_64") {
+        dependsOn(moveRustSrcFiles)
+    }
+
+    tasks.named("buildAnonCredWrapperForiOSArch64") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForiOSArch64Sim") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForiOSX86_64") {
+        dependsOn(moveRustSrcFiles)
+    }
+
+    tasks.named("buildAnonCredWrapperForMacOSArch64") {
+        dependsOn(moveRustSrcFiles)
+    }
+    tasks.named("buildAnonCredWrapperForMacOSX86_64") {
+        dependsOn(moveRustSrcFiles)
+    }
+}

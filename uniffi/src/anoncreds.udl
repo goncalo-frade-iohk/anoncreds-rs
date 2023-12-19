@@ -36,6 +36,13 @@ enum RegistryType {
     "CL_ACCUM"
 };
 
+enum PredicateTypes {
+    "GE",
+    "LE",
+    "GT",
+    "LT"
+};
+
 interface LinkSecret {
     constructor();
     [Throws=AnoncredsError, Name=new_from_value]
@@ -348,6 +355,11 @@ interface PresentationRequest {
   constructor(string json_string);
   [Throws=AnoncredsError]
   string get_json();
+  record<string, AttributeInfoValue> get_requested_attributes();
+  record<string, PredicateInfoValue> get_requested_predicates();
+  string get_name();
+  string get_version();
+  Nonce get_nonce();
 };
 
 interface Verifier {
@@ -361,6 +373,24 @@ interface Verifier {
     record<CredentialDefinitionId, CredentialDefinition> credential_definitions
   );
 
+};
+
+interface AttributeInfoValue {
+    [Throws=AnoncredsError]
+    constructor(string json);
+    [Throws=AnoncredsError]
+    string get_json();
+    sequence<string> get_names();
+    string get_name();
+};
+
+interface PredicateInfoValue {
+    [Throws=AnoncredsError]
+    constructor(string json);
+    [Throws=AnoncredsError]
+    string get_json();
+    string get_name();
+    PredicateTypes get_p_type();
 };
 
 namespace anoncreds_wrapper {};
