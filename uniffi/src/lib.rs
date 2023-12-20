@@ -5,7 +5,7 @@ mod prover;
 mod verifier;
 
 pub use crate::cred_def::CredentialDefinitionPrivate;
-pub use crate::custom_types::{AttributeValues, CredentialValues};
+pub use crate::custom_types::{AttributeValues, CredentialValues, PredicateInfoValue, AttributeInfoValue};
 pub use crate::types::cred_def::{
     CredentialDefinition, CredentialDefinitionData, CredentialKeyCorrectnessProof,
 };
@@ -30,13 +30,12 @@ pub use anoncreds_core::data_types::schema::{Schema, SchemaId};
 pub use anoncreds_core::types::{
     AttributeNames, CredentialDefinitionConfig, RegistryType, SignatureType,
 };
+pub use anoncreds_core::data_types::pres_request::PredicateTypes;
 
 pub use issuer::CredentialRevocationConfig;
 pub use issuer::*;
 pub use prover::*;
 pub use types::*;
 pub use verifier::*;
-
-// fn x() -> AttributeValues
 
 uniffi::include_scaffolding!("anoncreds");
