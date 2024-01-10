@@ -5,12 +5,13 @@ plugins {
 
 buildscript {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21")
         classpath("com.android.tools.build:gradle:7.2.2")
         classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.21.0")
     }
@@ -18,6 +19,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         google()

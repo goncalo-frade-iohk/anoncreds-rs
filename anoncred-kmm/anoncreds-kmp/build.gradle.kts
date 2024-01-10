@@ -11,7 +11,7 @@ plugins {
 }
 
 apply(plugin = "kotlinx-atomicfu")
-version = "0.4.1"
+version = "0.4.3"
 group = "io.iohk.atala.prism.anoncredskmp"
 
 fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
@@ -54,17 +54,17 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
                             .absolutePath
                     )
                 }
-//                "ios" -> {
-//                    extraOpts(
-//                        "-libraryPath",
-//                        rootDir
-//                            .resolve("anoncred-wrapper-rust")
-//                            .resolve("target")
-//                            .resolve("ios-universal")
-//                            .resolve("release")
-//                            .absolutePath
-//                    )
-//                }
+                "ios" -> {
+                    extraOpts(
+                        "-libraryPath",
+                        rootDir
+                            .resolve("anoncred-wrapper-rust")
+                            .resolve("target")
+                            .resolve("ios-universal")
+                            .resolve("release")
+                            .absolutePath
+                    )
+                }
                 else -> {
                     throw GradleException("Unsupported linking")
                 }
@@ -82,7 +82,7 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    android {
+    androidTarget {
         publishAllLibraryVariants()
     }
 

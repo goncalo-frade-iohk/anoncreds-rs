@@ -4,6 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import anoncreds_wrapper.AttributeValues
 import anoncreds_wrapper.CredentialDefinitionConfig
 import anoncreds_wrapper.Issuer
+import anoncreds_wrapper.LinkSecret
+import anoncreds_wrapper.PresentationRequest
 import anoncreds_wrapper.Prover
 import anoncreds_wrapper.RegistryType
 import anoncreds_wrapper.Schema
@@ -15,6 +17,39 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class IssuerTests {
+    @Test
+    fun test() {
+        val presentationJSON = """
+            {
+            "requested_attributes":{
+            "attribute_1":{
+            "name":"name",
+            "restrictions":[
+
+            ]
+            }
+            },
+            "requested_predicates":{
+
+            },
+            "name":"presentation_request_1",
+            "nonce":"1177620373658433495312997",
+            "version":"0.1"
+        }
+        """
+        val presentationRequest = PresentationRequest(presentationJSON)
+
+        val requestedAttributes = presentationRequest.getRequestedAttributes()
+        val key = requestedAttributes.keys.first()
+        val requestedAttribute = requestedAttributes.get(key)!!
+        val requestedAttributeJSON = requestedAttribute.getJson()
+
+        println(requestedAttributeJSON)
+
+        val secret = LinkSecret()
+        assertTrue(secret != null)
+    }
+
     @Test
     fun test_Issuer_createSchema() {
         val expectedSchema = Schema("Moussa", "1.0", listOf("name", "age"), "sample:uri")
