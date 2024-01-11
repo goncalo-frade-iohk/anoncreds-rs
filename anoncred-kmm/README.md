@@ -1,11 +1,12 @@
 # AnonCred-KMP
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg?logo=kotlin)](http://kotlinlang.org)
+![badge-license]
+![badge-latest-release]
+[![semantic-release-kotlin]](https://github.com/semantic-release/semantic-release)
 
-![apple-silicon](https://camo.githubusercontent.com/a92c841ffd377756a144d5723ff04ecec886953d40ac03baa738590514714921/687474703a2f2f696d672e736869656c64732e696f2f62616467652f737570706f72742d2535424170706c6553696c69636f6e2535442d3433424246462e7376673f7374796c653d666c6174)
-![ios](https://camo.githubusercontent.com/1fec6f0d044c5e1d73656bfceed9a78fd4121b17e82a2705d2a47f6fd1f0e3e5/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d696f732d4344434443442e7376673f7374796c653d666c6174)
-![jvm](https://camo.githubusercontent.com/700f5dcd442fd835875568c038ae5cd53518c80ae5a0cf12c7c5cf4743b5225b/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d6a766d2d4442343133442e7376673f7374796c653d666c6174)
-![macos](https://camo.githubusercontent.com/1b8313498db244646b38a4480186ae2b25464e5e8d71a1920c52b2be5212b909/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d6d61636f732d3131313131312e7376673f7374796c653d666c6174)
+![badge-platform-android]
+![badge-platform-jvm]
 
 ## Introduction
 
@@ -50,4 +51,90 @@ The library provides wrapper for the following operations
 ## Requirement
 
 - Rust v1.72.0
-- KMP v1.8.20
+- KMP v1.9.22
+
+## Integrating the lib into an existing project
+
+### How to use for JVM/Android app
+
+In `build.gradle.kts` files include the dependency
+```kotlin
+repositories {
+    mavenCentral()
+}
+```
+For dependencies
+```kotlin
+dependencies {
+    implementation("io.iohk.atala.prism.anoncredskmp:anoncreds-kmp:<latest version>")
+}
+```
+
+### How to use for another KMP (Kotlin Multiplatform) project
+
+#### Using Groovy
+
+In the project `build.gradle`
+```groovy
+allprojects {
+    repositories {
+        // along with all the other current existing repos add the following
+        mavenCentral()
+    }
+}
+```
+In the module `build.gradle`
+```groovy
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                // This following is just an example you can import it as per you needs
+                implementation 'io.iohk.atala.prism.anoncredskmp:anoncreds-kmp:<latest version>'
+            }
+        }
+    }
+}
+```
+
+#### Using Kotlin DSL
+
+In the project `build.gradle.kts`
+```kotlin
+allprojects {
+    repositories {
+        // along with all the other current existing repos add the following
+        mavenCentral()
+    }
+}
+```
+```kotlin
+kotlin {
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                // This following is just an example you can import it as per you needs
+                implementation("io.iohk.atala.prism.anoncredskmp:anoncreds-kmp:<latest version>")
+            }
+        }
+    }
+}
+```
+
+### How to use for Scala project
+
+```scala
+libraryDependencies += "io.iohk.atala.prism.anoncredskmp" % "anoncreds-kmp-jvm" % "<latest version>"
+```
+
+<!-- TAG_VERSION -->
+[badge-latest-release]: https://img.shields.io/badge/latest--release-0.4.3-blue.svg?style=flat
+[badge-license]: https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat
+[semantic-release-kotlin]: https://img.shields.io/badge/semantic--release-kotlin-blue?logo=semantic-release
+
+<!-- TAG_PLATFORMS -->
+[badge-platform-android]: http://img.shields.io/badge/-android-6EDB8D.svg?style=flat
+[badge-platform-ios]: http://img.shields.io/badge/-ios-CDCDCD.svg?style=flat
+[badge-platform-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?style=flat
+[badge-platform-js]: http://img.shields.io/badge/-js-F8DB5D.svg?style=flat
+[badge-platform-js-node]: https://img.shields.io/badge/-nodejs-68a063.svg?style=flat
