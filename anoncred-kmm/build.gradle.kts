@@ -1,6 +1,9 @@
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.22"
+    id("com.android.library") version "8.1.4" apply false
+    id("org.jetbrains.dokka") version "1.9.20"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
 }
 
 buildscript {
@@ -11,9 +14,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21")
-        classpath("com.android.tools.build:gradle:7.2.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
         classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.21.0")
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -47,8 +55,19 @@ subprojects {
             exclude("**/generated/**")
             exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
             exclude { element -> element.file.path.contains("generated/") }
-            exclude { it.file.path.contains("$buildDir/generated/") }
+            exclude("${project.layout.buildDirectory.asFile.get()}/generated/")
             exclude { it.file.path.contains(layout.buildDirectory.dir("generated").get().toString()) }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(System.getenv("SONATYPE_USERNAME"))
+            password.set(System.getenv("SONATYPE_PASSWORD"))
         }
     }
 }
