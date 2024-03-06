@@ -1,18 +1,22 @@
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Base64
 
 val os: OperatingSystem = OperatingSystem.current()
+val publishedMavenId: String = "io.iohk.atala.prism.anoncredskmp"
 
 plugins {
-    kotlin("multiplatform")
     id("com.android.library")
+    kotlin("multiplatform")
+    id("org.jetbrains.dokka")
     id("maven-publish")
+    id("signing")
 }
 
 apply(plugin = "kotlinx-atomicfu")
-version = "0.4.3"
-group = "io.iohk.atala.prism.anoncredskmp"
+version = "0.4.4"
+group = publishedMavenId
 
 fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
     cinterops {
@@ -20,8 +24,7 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
             val crate = this.name
             packageName("$crate.cinterop")
             header(
-                buildDir
-                    .resolve("generated")
+                project.layout.buildDirectory.asFile.get()
                     .resolve("nativeInterop")
                     .resolve("cinterop")
                     .resolve("headers")
@@ -43,6 +46,7 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
                             .absolutePath
                     )
                 }
+
                 "macosArm64" -> {
                     extraOpts(
                         "-libraryPath",
@@ -54,6 +58,7 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
                             .absolutePath
                     )
                 }
+
                 "ios" -> {
                     extraOpts(
                         "-libraryPath",
@@ -65,6 +70,7 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
                             .absolutePath
                     )
                 }
+
                 else -> {
                     throw GradleException("Unsupported linking")
                 }
@@ -73,96 +79,65 @@ fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
     }
 }
 
+/**
+ * The `javadocJar` variable is used to register a `Jar` task to generate a Javadoc JAR file.
+ * The Javadoc JAR file is created with the classifier "javadoc" and it includes the HTML documentation generated
+ * by the `dokkaHtml` task.
+ */
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
+}
+
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
         }
-    }
-    androidTarget {
-        publishAllLibraryVariants()
-    }
-
-//    if (os.isMacOsX) {
-//        macosX64("native") {
-//            compilations.getByName("main") {
-//                this.anoncredsCinterops("macosX64")
-//            }
-//        }
-//        if (System.getProperty("os.arch") != "x86_64") {
-//            macosArm64 {
-//                compilations.getByName("main") {
-//                    this.anoncredsCinterops("macosArm64")
-//                }
-//            }
-//        }
-//    }
-
-/*
-    val crateTargetLibDir = rootDir.resolve("anoncred-wrapper-rust").resolve("target").resolve("debug")
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> {
-            if (System.getProperty("os.arch") != "x86_64") {
-                macosArm64("native")
-            } else {
-                macosX64("native")
-            }
-        }
-        hostOs == "Linux" -> linuxArm64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
-    nativeTarget.apply {
-        compilations.getByName("main") {
-            println("nativeTarget-only-main")
-            cinterops {
-                val anoncreds_wrapper by creating {
-                    val crate = this.name
-                    packageName("$crate.cinterop")
-                    header(
-                        generatedDir.resolve("nativeInterop").resolve("cinterop").resolve("headers")
-                            .resolve(crate).resolve("$crate.h")
-                    )
-                    tasks.named(interopProcessingTaskName) {
-                        dependsOn(":anoncred-wrapper-rust:buildRust")
-                    }
-                    extraOpts("-libraryPath", crateTargetLibDir.absolutePath)
+        withSourcesJar()
+        publishing {
+            publications {
+                withType<MavenPublication> {
+                    artifact(javadocJar)
                 }
             }
         }
     }
-*/
+    androidTarget {
+        publishAllLibraryVariants()
+        compilations.all {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
-            val generatedDir = buildDir
+            val generatedDir = project.layout.buildDirectory.asFile.get()
                 .resolve("generated")
                 .resolve("commonMain")
                 .resolve("kotlin")
             kotlin.srcDir(generatedDir)
             dependencies {
-                implementation("com.squareup.okio:okio:3.4.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+                implementation("com.squareup.okio:okio:3.7.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
             }
         }
         val jvmMain by getting {
-            val generatedDir = buildDir
+            val generatedDir = project.layout.buildDirectory.asFile.get()
                 .resolve("generated")
                 .resolve("jvmMain")
                 .resolve("kotlin")
             kotlin.srcDir(generatedDir)
-            val generatedResources = buildDir
+            val generatedResources = project.layout.buildDirectory.asFile.get()
                 .resolve("generatedResources")
                 .resolve("jvm")
                 .resolve("main")
@@ -173,12 +148,12 @@ kotlin {
         }
         val jvmTest by getting
         val androidMain by getting {
-            val generatedDir = buildDir
+            val generatedDir = project.layout.buildDirectory.asFile.get()
                 .resolve("generated")
                 .resolve("androidMain")
                 .resolve("kotlin")
             kotlin.srcDir(generatedDir)
-            val generatedResources = buildDir
+            val generatedResources = project.layout.buildDirectory.asFile.get()
                 .resolve("generatedResources")
                 .resolve("android")
                 .resolve("main")
@@ -193,21 +168,6 @@ kotlin {
                 implementation("junit:junit:4.13.2")
             }
         }
-//        if (os.isMacOsX) {
-//            val nativeMain by getting { // aka "macosX64"
-//                val generatedDir = buildDir
-//                    .resolve("generated")
-//                    .resolve("nativeMain")
-//                    .resolve("kotlin")
-//                kotlin.srcDir(generatedDir)
-//            }
-//            val nativeTest by getting
-//            if (System.getProperty("os.arch") != "x86_64") {
-//                val macosArm64Main by getting {
-//                    dependsOn(nativeMain)
-//                }
-//            }
-//        }
         all {
             languageSettings {
                 optIn("kotlin.RequiresOptIn")
@@ -227,6 +187,57 @@ val rustClean by tasks.register("rustClean") {
 }
 
 publishing {
+    publications {
+        withType<MavenPublication> {
+            groupId = publishedMavenId
+            artifactId = project.name
+            version = project.version.toString()
+            pom {
+                name.set("AnonCred KMP Wrapper")
+                description.set("The AnonCreds (Anonymous Credentials) specification is based on the open source verifiable credential implementation of AnonCreds that has been in use since 2017, initially as part of the Hyperledger Indy open source project and now in the Hyperledger AnonCreds project. The extensive use of AnonCreds around the world has made it a de facto standard for ZKP-based verifiable credentials, and this specification is the formalization of that implementation.")
+                url.set("https://docs.atalaprism.io/")
+                organization {
+                    name.set("IOG")
+                    url.set("https://iog.io/")
+                }
+                issueManagement {
+                    system.set("Github")
+                    url.set("https://github.com/input-output-hk/anoncreds-rs")
+                }
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("hamada147")
+                        name.set("Ahmed Moussa")
+                        email.set("ahmed.moussa@iohk.io")
+                        organization.set("IOG")
+                        roles.add("developer")
+                        url.set("https://github.com/hamada147")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://input-output-hk/anoncreds-rs.git")
+                    developerConnection.set("scm:git:ssh://input-output-hk/anoncreds-rs.git")
+                    url.set("https://github.com/input-output-hk/anoncreds-rs")
+                }
+            }
+            if (System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN") != null) {
+                if (System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN").isNotBlank()) {
+                    signing {
+                        val base64EncodedAsciiArmoredSigningKey: String = System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN") ?: ""
+                        val signingKeyPassword: String = System.getenv("SIGNING_KEY_PASSWORD") ?: ""
+                        useInMemoryPgpKeys(String(Base64.getDecoder().decode(base64EncodedAsciiArmoredSigningKey.toByteArray())), signingKeyPassword)
+                        sign(this@withType)
+                    }
+                }
+            }
+        }
+    }
     repositories {
         maven {
             this.name = "GitHubPackages"
@@ -241,14 +252,14 @@ publishing {
 
 android {
     ndkVersion = "26.0.10792818"
-    compileSdk = 33
+    compileSdk = 34
     namespace = "io.iohk.atala.prism.anoncredskmp"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     sourceSets["main"].jniLibs {
         setSrcDirs(
             listOf(
-                buildDir
+                project.layout.buildDirectory.asFile.get()
                     .resolve("generatedResources")
                     .resolve("android")
                     .resolve("main")
@@ -258,11 +269,10 @@ android {
     }
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     /**
      * Because Software Components will not be created automatically for Maven publishing from
@@ -286,10 +296,10 @@ afterEvaluate {
     tasks.withType<ProcessResources> {
         dependsOn(":anoncred-wrapper-rust:buildRust")
     }
-    tasks.named("lintAnalyzeDebug") {
-        this.enabled = false
+    tasks.named("packageDebugResources") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
     }
-    tasks.named("lintAnalyzeRelease") {
-        this.enabled = false
+    tasks.named("packageReleaseResources") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
     }
 }
