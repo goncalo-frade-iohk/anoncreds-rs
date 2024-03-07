@@ -13,7 +13,7 @@ plugins {
 }
 
 group = publishedMavenId
-version = "0.4.4"
+version = "0.4.6"
 
 buildscript {
     repositories {
@@ -78,7 +78,7 @@ subprojects {
                 withType<MavenPublication> {
                     groupId = publishedMavenId
                     artifactId = project.name
-                    version = project.version.toString()
+                    version = rootProject.version.toString()
                     pom {
                         name.set("AnonCred KMP Wrapper")
                         description.set("The AnonCreds (Anonymous Credentials) specification is based on the open source verifiable credential implementation of AnonCreds that has been in use since 2017, initially as part of the Hyperledger Indy open source project and now in the Hyperledger AnonCreds project. The extensive use of AnonCreds around the world has made it a de facto standard for ZKP-based verifiable credentials, and this specification is the formalization of that implementation.")
