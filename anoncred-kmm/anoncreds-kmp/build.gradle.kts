@@ -1,22 +1,23 @@
+import com.android.build.gradle.tasks.ProcessAndroidResources
+import com.android.build.gradle.tasks.SourceJarTask
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.Base64
+import java.net.URL
 
 val os: OperatingSystem = OperatingSystem.current()
-val publishedMavenId: String = "io.iohk.atala.prism.anoncredskmp"
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("org.jetbrains.dokka")
     id("maven-publish")
-    id("signing")
 }
 
 apply(plugin = "kotlinx-atomicfu")
-version = "0.4.4"
-group = publishedMavenId
+version = rootProject.version
+group = rootProject.group
 
 fun KotlinNativeCompilation.anoncredsCinterops(type: String) {
     cinterops {
@@ -112,6 +113,7 @@ kotlin {
             kotlinOptions.jvmTarget = "17"
         }
     }
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting {
@@ -186,74 +188,10 @@ val rustClean by tasks.register("rustClean") {
     dependsOn("clean")
 }
 
-publishing {
-    publications {
-        withType<MavenPublication> {
-            groupId = publishedMavenId
-            artifactId = project.name
-            version = project.version.toString()
-            pom {
-                name.set("AnonCred KMP Wrapper")
-                description.set("The AnonCreds (Anonymous Credentials) specification is based on the open source verifiable credential implementation of AnonCreds that has been in use since 2017, initially as part of the Hyperledger Indy open source project and now in the Hyperledger AnonCreds project. The extensive use of AnonCreds around the world has made it a de facto standard for ZKP-based verifiable credentials, and this specification is the formalization of that implementation.")
-                url.set("https://docs.atalaprism.io/")
-                organization {
-                    name.set("IOG")
-                    url.set("https://iog.io/")
-                }
-                issueManagement {
-                    system.set("Github")
-                    url.set("https://github.com/input-output-hk/anoncreds-rs")
-                }
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("hamada147")
-                        name.set("Ahmed Moussa")
-                        email.set("ahmed.moussa@iohk.io")
-                        organization.set("IOG")
-                        roles.add("developer")
-                        url.set("https://github.com/hamada147")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://input-output-hk/anoncreds-rs.git")
-                    developerConnection.set("scm:git:ssh://input-output-hk/anoncreds-rs.git")
-                    url.set("https://github.com/input-output-hk/anoncreds-rs")
-                }
-            }
-            if (System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN") != null) {
-                if (System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN").isNotBlank()) {
-                    signing {
-                        val base64EncodedAsciiArmoredSigningKey: String = System.getenv("BASE64_ARMORED_GPG_SIGNING_KEY_MAVEN") ?: ""
-                        val signingKeyPassword: String = System.getenv("SIGNING_KEY_PASSWORD") ?: ""
-                        useInMemoryPgpKeys(String(Base64.getDecoder().decode(base64EncodedAsciiArmoredSigningKey.toByteArray())), signingKeyPassword)
-                        sign(this@withType)
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            this.name = "GitHubPackages"
-            this.url = uri("https://maven.pkg.github.com/input-output-hk/anoncreds-rs/")
-            credentials {
-                this.username = System.getenv("ATALA_GITHUB_ACTOR")
-                this.password = System.getenv("ATALA_GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
 android {
     ndkVersion = "26.0.10792818"
     compileSdk = 34
-    namespace = "io.iohk.atala.prism.anoncredskmp"
+    namespace = rootProject.group.toString()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     sourceSets["main"].jniLibs {
@@ -289,6 +227,41 @@ android {
     }
 }
 
+// Dokka implementation
+tasks.withType<DokkaTask>().configureEach {
+    moduleName.set("AnonCred KMP")
+    moduleVersion.set(rootProject.version.toString())
+    description = "This is a Kotlin Multiplatform Library Wrapper for AnonCred Rust"
+    dokkaSourceSets {
+        configureEach {
+            jdkVersion.set(17)
+            languageVersion.set("1.9.22")
+            apiVersion.set("2.0")
+            sourceLink {
+                localDirectory.set(projectDir.resolve("src"))
+                remoteUrl.set(URL("https://github.com/input-output-hk/anoncreds-rs/tree/main/src"))
+                remoteLineSuffix.set("#L")
+            }
+            externalDocumentationLink {
+                url.set(URL("https://kotlinlang.org/api/latest/jvm/stdlib/"))
+            }
+            externalDocumentationLink {
+                url.set(URL("https://kotlinlang.org/api/kotlinx.serialization/"))
+            }
+            externalDocumentationLink {
+                url.set(URL("https://api.ktor.io/"))
+            }
+            externalDocumentationLink {
+                url.set(URL("https://kotlinlang.org/api/kotlinx-datetime/"))
+                packageListUrl.set(URL("https://kotlinlang.org/api/kotlinx-datetime/"))
+            }
+            externalDocumentationLink {
+                url.set(URL("https://kotlinlang.org/api/kotlinx.coroutines/"))
+            }
+        }
+    }
+}
+
 afterEvaluate {
     tasks.withType<KotlinCompile> {
         dependsOn(":anoncred-wrapper-rust:buildRust")
@@ -296,10 +269,46 @@ afterEvaluate {
     tasks.withType<ProcessResources> {
         dependsOn(":anoncred-wrapper-rust:buildRust")
     }
+    tasks.withType<PublishToMavenRepository> {
+        dependsOn(tasks.withType<Sign>(), ":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.withType<ProcessAndroidResources> {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.withType<SourceJarTask> {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.withType<org.gradle.jvm.tasks.Jar> {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
     tasks.named("packageDebugResources") {
         dependsOn(":anoncred-wrapper-rust:copyBindings")
     }
     tasks.named("packageReleaseResources") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("extractDeepLinksForAarDebug") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("extractDeepLinksForAarRelease") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("androidReleaseSourcesJar") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("androidDebugSourcesJar") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("mergeDebugJniLibFolders") {
+        dependsOn(":anoncred-wrapper-rust:copyGeneratedBinaryForAndroid")
+    }
+    tasks.named("mergeReleaseJniLibFolders") {
+        dependsOn(":anoncred-wrapper-rust:copyGeneratedBinaryForAndroid")
+    }
+    tasks.named("jvmSourcesJar") {
+        dependsOn(":anoncred-wrapper-rust:copyBindings")
+    }
+    tasks.named("sourcesJar") {
         dependsOn(":anoncred-wrapper-rust:copyBindings")
     }
 }
