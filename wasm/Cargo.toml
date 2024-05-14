@@ -1,12 +1,10 @@
 [package]
-name = "wasm"
+name = "anoncreds-wasm"
 version = "0.1.0"
 edition = "2021"
 
-
 [features]
-wasm = ["ursa/portable", "anoncreds/zeroize", "wasm-bindgen", "wasm-logger", "console_error_panic_hook", "serde-wasm-bindgen"]
-
+default = ["ursa/portable_wasm", "anoncreds/zeroize", "wasm-bindgen", "wasm-logger", "console_error_panic_hook", "serde-wasm-bindgen"]
 
 [dependencies]
 anoncreds = {path = "..", default-features = false}
@@ -16,15 +14,16 @@ wasm-bindgen = { version = "0.2.84", optional = true }
 wasm-logger = { version = "0.2.0", optional = true }
 console_error_panic_hook = { version="0.1.7", optional = true }
 serde-wasm-bindgen = { version = "0.4", optional = true}
-
-
-
-[lib]
-crate-type = ["cdylib", "rlib"]
+log = "0.4.21"
+serde = { version = "1.0.201", features = ["derive"] }
+serde_json = "1.0.117"
 
 [dependencies.ursa]
 git = "https://github.com/hyperledger/ursa.git"
 rev = "390f004e3e91f1257da4bbcd6bc2d72f67b62c0f"
 version = "0.3.7"
 default-features = false
-features = ["portable"]
+features = []
+
+[lib]
+crate-type = ["cdylib", "rlib"]
