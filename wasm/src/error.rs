@@ -61,8 +61,8 @@ impl From<serde_wasm_bindgen::Error> for AnoncredsError {
 #[wasm_bindgen(inspectable)]
 impl AnoncredsError {
     #[wasm_bindgen(getter)]
-    pub fn code(&self) -> JsValue {
-        self.code.clone().into_js_result().unwrap()
+    pub fn code(&self) -> Errors {
+        self.code.clone()
     }
 
     #[wasm_bindgen(getter)]
