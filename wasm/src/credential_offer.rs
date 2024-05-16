@@ -26,10 +26,10 @@ pub struct CredentialOffer {
 #[wasm_bindgen(skip_typescript)]
 impl CredentialOffer {
 
-    #[wasm_bindgen(static_method_of = CredentialOffer, js_name = from)]
+    #[wasm_bindgen(js_name = from)]
     pub fn from(offer: JsValue) -> Self {
         CredentialOffer {
-            _offer: serde_wasm_bindgen::from_value(offer).expect("Unable to deserialise Credential Offer")
+            _offer: serde_wasm_bindgen::from_value(offer).expect("Unable to deserialize Credential Offer")
         }
     }
 

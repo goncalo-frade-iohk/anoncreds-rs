@@ -1,6 +1,7 @@
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_request::CredentialRequestMetadata as AnoncredsCredentialRequestMetadata;
+use crate::error::AnoncredsError;
 
 
 #[wasm_bindgen]
@@ -11,11 +12,29 @@ pub struct CredentialRequestMetadata {
 #[wasm_bindgen]
 impl CredentialRequestMetadata {
 
-    #[wasm_bindgen(static_method_of = CredentialRequestMetadata, js_name = from)]
-    pub fn from(request: JsValue) -> Self {
-        CredentialRequestMetadata {
-            _metadata: serde_wasm_bindgen::from_value(request).expect("Unable to deserialise Credential Request Metadata")
-        }
+    #[wasm_bindgen(js_name = from)]
+    pub fn from(request: JsValue) -> Result<CredentialRequestMetadata, JsValue> {
+        let metadata:AnoncredsCredentialRequestMetadata = serde_wasm_bindgen::from_value(request)
+            .map_err(|e| AnoncredsError::from(e))?;
+
+        Ok(CredentialRequestMetadata {
+            _metadata: metadata
+        })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn link_secret_blinding_data(&self) -> JsValue {
+        serde_wasm_bindgen::to_value(&self._metadata.link_secret_blinding_data).unwrap()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn nonce(&self) -> String {
+        self._metadata.nonce.to_string()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn link_secret_name(&self) -> String {
+        self._metadata.link_secret_name.to_string()
     }
 }
 

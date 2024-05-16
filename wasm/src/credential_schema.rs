@@ -2,17 +2,21 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::schema::{Schema as AnoncredsSchema, Schema};
 use anoncreds::types::AttributeNames;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
+use crate::credential_definition::CredentialDefinition;
 use crate::credential_request::CredentialRequest;
+use crate::error::{AnoncredsError, Errors};
 
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct CredentialSchema {
     pub(crate) _schema: AnoncredsSchema
 }
 
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
 impl CredentialSchema {
 
     #[wasm_bindgen(constructor)]
@@ -21,18 +25,39 @@ impl CredentialSchema {
         schema_version:&str,
         issuer_id: &str,
         attr_names: Vec<String>
-    ) -> CredentialSchema {
+    ) -> Result<CredentialSchema, JsValue> {
         let schema_json = json!({
             "name": schema_name,
             "version": schema_version,
             "attrNames": attr_names,
             "issuerId": issuer_id
         });
-        let schema: Schema = serde_json::from_value(schema_json).unwrap();
-        CredentialSchema {
-            _schema: schema
-        }
+
+        let schema: Schema = anoncreds::issuer::create_schema(
+            schema_name,
+            schema_version,
+            issuer_id.to_string(),
+            AttributeNames::from(attr_names)
+        )
+            .map_err(|e| AnoncredsError::from(e))?;
+
+
+        Ok(
+            CredentialSchema {
+                _schema: schema
+            }
+        )
     }
+
+    #[wasm_bindgen(js_name = from)]
+    pub fn from(schema: JsValue) -> Result<CredentialSchema,JsValue > {
+        let schema = serde_wasm_bindgen::from_value(schema)
+            .map_err(|e| AnoncredsError::from(e))?;
+        Ok(CredentialSchema {
+            _schema: schema
+        })
+    }
+
 
     #[wasm_bindgen(getter)]
     pub fn name(&self) -> String {
@@ -53,4 +78,5 @@ impl CredentialSchema {
     pub fn attr_names(&self) -> Vec<String> {
         self._schema.attr_names.0.clone()
     }
+
 }
