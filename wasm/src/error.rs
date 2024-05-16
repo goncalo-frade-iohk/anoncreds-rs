@@ -51,7 +51,7 @@ impl From<serde_wasm_bindgen::Error> for AnoncredsError {
     fn from(error: serde_wasm_bindgen::Error) -> AnoncredsError {
         AnoncredsError {
             code: Errors::SerializationError,
-            message:format!("Serialization {} in ", error),
+            message:format!("Serialization {}", error),
         }
     }
 }
@@ -60,10 +60,11 @@ impl From<Error> for AnoncredsError {
     fn from(error:Error) -> AnoncredsError {
         AnoncredsError {
             code: Errors::SerializationError,
-            message:format!("Serialization {} in ", error),
+            message:format!("Serialization {}", error),
         }
     }
 }
+
 
 #[wasm_bindgen]
 impl AnoncredsError {
