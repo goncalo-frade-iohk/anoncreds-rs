@@ -1,12 +1,10 @@
-use std::ops::Deref;
 use serde::{Deserialize, Serialize};
+use serde::de::value::Error;
 use ursa::errors::UrsaCryptoError;
-use wasm_bindgen::__rt::IntoJsResult;
-use wasm_bindgen::convert::IntoWasmAbi;
 use wasm_bindgen::prelude::*;
 
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Errors {
     Error,
@@ -58,7 +56,16 @@ impl From<serde_wasm_bindgen::Error> for AnoncredsError {
     }
 }
 
-#[wasm_bindgen(inspectable)]
+impl From<Error> for AnoncredsError {
+    fn from(error:Error) -> AnoncredsError {
+        AnoncredsError {
+            code: Errors::SerializationError,
+            message:format!("Serialization {} in ", error),
+        }
+    }
+}
+
+#[wasm_bindgen]
 impl AnoncredsError {
     #[wasm_bindgen(getter)]
     pub fn code(&self) -> Errors {

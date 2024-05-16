@@ -10,10 +10,10 @@ pub struct Credential {
     pub(crate) _credential: AnoncredsCredential
 }
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 impl Credential {
 
-    #[wasm_bindgen(static_method_of = Credential, js_name = from)]
+    #[wasm_bindgen( js_name = from)]
     pub fn from(credential: JsValue) -> Result<Credential, JsValue> {
         let credential:AnoncredsCredential = serde_wasm_bindgen::from_value::<AnoncredsCredential>(credential)
             .map_err(|e| AnoncredsError::from(e))?;

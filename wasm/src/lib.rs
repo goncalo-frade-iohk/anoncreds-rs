@@ -1,5 +1,8 @@
-use log::{Level, trace};
+#[cfg(debug_assertions)]
+use log::{Level};
+#[cfg(debug_assertions)]
 use wasm_bindgen::JsValue;
+#[cfg(debug_assertions)]
 use wasm_bindgen::prelude::wasm_bindgen;
 
 // Import the console log function from JavaScript

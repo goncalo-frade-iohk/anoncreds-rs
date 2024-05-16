@@ -22,12 +22,12 @@ pub struct Prover;
 #[wasm_bindgen]
 impl Prover {
 
-    #[wasm_bindgen(static_method_of = Prover, js_name = createLinkSecret)]
+    #[wasm_bindgen( js_name = createLinkSecret)]
     pub fn create_link_secret() -> Result<LinkSecret, JsValue> {
         LinkSecret::new()
     }
 
-    #[wasm_bindgen(static_method_of = Prover, js_name = createCredentialRequest)]
+    #[wasm_bindgen( js_name = createCredentialRequest)]
     pub fn create_credential_request(
         entropy: String,
         credential_definition: CredentialDefinition,
@@ -55,7 +55,7 @@ impl Prover {
         Ok(CreateCredentialRequestResponse::new(request, metadata))
     }
 
-    #[wasm_bindgen(static_method_of = Prover, js_name = processCredential)]
+    #[wasm_bindgen( js_name = processCredential)]
     pub fn process_credential(
         credential: Credential,
         credential_request_metadata: CredentialRequestMetadata,
@@ -75,7 +75,7 @@ impl Prover {
        })
     }
 
-    #[wasm_bindgen(static_method_of = Prover, js_name = createPresentation)]
+    #[wasm_bindgen( js_name = createPresentation)]
     pub fn create_presentation(
         presentation_request: PresentationRequest,
         credential: Credential,

@@ -1,14 +1,10 @@
 use std::collections::HashMap;
 use anoncreds::data_types::cred_def::CredentialDefinitionId;
-use anoncreds::data_types::nonce::Nonce;
-use anoncreds::data_types::pres_request::{AttributeInfo, PredicateInfo};
 use anoncreds::data_types::schema::{Schema, SchemaId};
 use anoncreds::verifier::verify_presentation;
 use wasm_bindgen::prelude::*;
 use crate::presentation::{Presentation, PresentationRequest};
 use anoncreds::data_types::cred_def::{CredentialDefinition as AnoncredsCredentialDefinition};
-use js_sys::Error;
-use log::trace;
 
 #[wasm_bindgen]
 pub struct Verifier;
@@ -65,7 +61,7 @@ impl Verifier {
             None
         ) {
             Ok(verified) => Ok(verified),
-            Err(err) => Ok(false),
+            Err(_err) => Ok(false),
         }
     }
 

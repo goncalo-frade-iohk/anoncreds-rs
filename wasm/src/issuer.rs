@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use anoncreds::data_types::issuer_id::IssuerId;
-use anoncreds::types::{AttributeNames, CredentialDefinitionConfig, CredentialValues, MakeCredentialValues, SignatureType};
+use anoncreds::types::{ CredentialDefinitionConfig, MakeCredentialValues, SignatureType};
 use wasm_bindgen::prelude::*;
 use crate::credential_definition::{CredentialDefinition, CredentialDefinitionPrivate, CredentialDefinitionPrivateResponse, CredentialKeyCorrectnessProof};
 use crate::credential_offer::CredentialOffer;

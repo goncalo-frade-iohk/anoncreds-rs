@@ -1,7 +1,6 @@
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_request::CredentialRequest as AnoncredsCredentialRequest;
-use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::from_value;
 use crate::error::AnoncredsError;
 use crate::utils::extract_property;
@@ -34,7 +33,7 @@ pub struct CredentialRequest {
     pub(crate) _request: AnoncredsCredentialRequest
 }
 
-#[wasm_bindgen(skip_typescript, inspectable)]
+#[wasm_bindgen]
 impl CredentialRequest {
 
     #[wasm_bindgen(js_name = from)]

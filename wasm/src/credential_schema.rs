@@ -3,10 +3,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::schema::{Schema as AnoncredsSchema, Schema};
 use anoncreds::types::AttributeNames;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use crate::credential_definition::CredentialDefinition;
-use crate::credential_request::CredentialRequest;
-use crate::error::{AnoncredsError, Errors};
+use crate::error::{AnoncredsError};
 
 
 #[wasm_bindgen(inspectable)]
@@ -16,7 +13,7 @@ pub struct CredentialSchema {
 }
 
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 impl CredentialSchema {
 
     #[wasm_bindgen(constructor)]
@@ -26,22 +23,12 @@ impl CredentialSchema {
         issuer_id: &str,
         attr_names: Vec<String>
     ) -> Result<CredentialSchema, JsValue> {
-        let schema_json = json!({
-            "name": schema_name,
-            "version": schema_version,
-            "attrNames": attr_names,
-            "issuerId": issuer_id
-        });
-
         let schema: Schema = anoncreds::issuer::create_schema(
             schema_name,
             schema_version,
             issuer_id.to_string(),
             AttributeNames::from(attr_names)
-        )
-            .map_err(|e| AnoncredsError::from(e))?;
-
-
+        ).map_err(|e| AnoncredsError::from(e))?;
         Ok(
             CredentialSchema {
                 _schema: schema

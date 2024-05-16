@@ -25,7 +25,7 @@ impl LinkSecret {
         )
     }
 
-    #[wasm_bindgen(static_method_of = LinkSecret, js_name = fromString)]
+    #[wasm_bindgen( js_name = fromString)]
     pub fn from_string(link_secret: String) -> Result<LinkSecret, JsValue> {
         let link_str: &str = link_secret.as_str();
         let link = AnoncredsLinkSecretType::try_from(link_str).unwrap();

@@ -15,7 +15,7 @@ pub struct Presentation {
 
 #[wasm_bindgen]
 impl Presentation {
-    #[wasm_bindgen(static_method_of = Presentation, js_name = from)]
+    #[wasm_bindgen(js_name = from)]
     pub fn from(presentation: JsValue) -> Result<Presentation, JsValue> {
         let anoncreds_presentation: AnoncredsPresentation = serde_wasm_bindgen::from_value(presentation)
             .map_err(|e| AnoncredsError::from(e))?;

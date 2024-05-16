@@ -1,4 +1,3 @@
-use std::array::IntoIter;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_def::CredentialDefinitionPrivate as AnoncredsCredentialDefinitionPrivate;
@@ -10,28 +9,16 @@ use wasm_bindgen::__rt::IntoJsResult;
 use crate::error::AnoncredsError;
 use crate::utils::extract_property;
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_APPEND_CONTENT: &'static str = r#"
-export class CredentialDefinition {
-    free(): void;
-    static from(definition: any): CredentialDefinition;
-    readonly schemaId: string;
-    readonly type: string;
-    readonly tag: string;
-    readonly value: Record<string, any>;
-    readonly issuerId: string;
-    toJSON():any;
-}
-"#;
 
-#[wasm_bindgen(skip_typescript, inspectable)]
+
+#[wasm_bindgen( inspectable)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CredentialDefinition {
     pub(crate) _definition: AnoncredsCredentialDefinition
 }
 
 
-#[wasm_bindgen(skip_typescript, inspectable)]
+#[wasm_bindgen]
 impl CredentialDefinition {
 
     pub(crate) fn new(value: AnoncredsCredentialDefinition) -> Self {
@@ -40,7 +27,7 @@ impl CredentialDefinition {
         }
     }
 
-    #[wasm_bindgen(static_method_of = CredentialDefinition, js_name = from)]
+    #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition: JsValue) -> Result<CredentialDefinition, JsValue> {
         let definition: AnoncredsCredentialDefinition = from_value(credential_definition)
             .map_err(|e| AnoncredsError::from(e))?;
@@ -84,7 +71,7 @@ pub struct CredentialDefinitionPrivate {
     pub(crate) _value: AnoncredsCredentialDefinitionPrivate
 }
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 impl CredentialDefinitionPrivate {
     pub(crate) fn new(value: AnoncredsCredentialDefinitionPrivate) -> Self {
         CredentialDefinitionPrivate {
@@ -92,7 +79,7 @@ impl CredentialDefinitionPrivate {
         }
     }
 
-    #[wasm_bindgen(static_method_of = CredentialDefinitionPrivate, js_name = from)]
+    #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition_private: JsValue) -> Result<CredentialDefinitionPrivate, JsValue> {
         let value:AnoncredsCredentialDefinitionPrivate = from_value(credential_definition_private)
             .map_err(|e| AnoncredsError::from(e))?;
@@ -114,7 +101,7 @@ pub struct CredentialKeyCorrectnessProof {
     pub(crate) _value: ursa::cl::CredentialKeyCorrectnessProof
 }
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 impl CredentialKeyCorrectnessProof {
 
     pub(crate) fn new(value: ursa::cl::CredentialKeyCorrectnessProof) -> Self {
@@ -123,7 +110,7 @@ impl CredentialKeyCorrectnessProof {
         }
     }
 
-    #[wasm_bindgen(static_method_of = CredentialKeyCorrectnessProof, js_name = from)]
+    #[wasm_bindgen( js_name = from)]
     pub fn from(key_correctness_proof: JsValue) -> Result<CredentialKeyCorrectnessProof, JsValue> {
         let value:ursa::cl::CredentialKeyCorrectnessProof = from_value(key_correctness_proof)
             .map_err(|e| AnoncredsError::from(e))?;
@@ -170,7 +157,7 @@ pub struct CredentialDefinitionPrivateResponse {
     pub(crate) credential_key_correctness_proof: CredentialKeyCorrectnessProof,
 }
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen]
 impl CredentialDefinitionPrivateResponse {
 
     pub fn new(
