@@ -30,7 +30,7 @@ impl CredentialDefinition {
     #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition: JsValue) -> Result<CredentialDefinition, JsValue> {
         let definition: AnoncredsCredentialDefinition = from_value(credential_definition)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialDefinition {
             _definition: definition,
@@ -82,7 +82,7 @@ impl CredentialDefinitionPrivate {
     #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition_private: JsValue) -> Result<CredentialDefinitionPrivate, JsValue> {
         let value:AnoncredsCredentialDefinitionPrivate = from_value(credential_definition_private)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
 
         Ok(CredentialDefinitionPrivate {
@@ -113,40 +113,55 @@ impl CredentialKeyCorrectnessProof {
     #[wasm_bindgen( js_name = from)]
     pub fn from(key_correctness_proof: JsValue) -> Result<CredentialKeyCorrectnessProof, JsValue> {
         let value:ursa::cl::CredentialKeyCorrectnessProof = from_value(key_correctness_proof)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(CredentialKeyCorrectnessProof {
             _value: value
         })
     }
 
-    #[wasm_bindgen(getter)]
-    pub fn c(&self) -> JsValue {
-        let credential_key_correctness_proof: ursa::cl::CredentialKeyCorrectnessProof = serde_wasm_bindgen::from_value(serde_wasm_bindgen::to_value(&self._value).unwrap()).unwrap();
-        let value:JsValue = serde_wasm_bindgen::to_value(&credential_key_correctness_proof).unwrap();
-        extract_property::<String>(&value, "c").unwrap().into_js_result().unwrap()
+    fn get_key_correctness_proof(&self) -> Result<ursa::cl::CredentialKeyCorrectnessProof, JsValue> {
+        let key_correctness = serde_wasm_bindgen::to_value(&self._value).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
+        from_value(key_correctness).map_err(|e| JsValue::from(AnoncredsError::from(e)))
+    }
+
+    fn to_key_correctness_proof_js(&self, credential_key_correctness_proof: ursa::cl::CredentialKeyCorrectnessProof) -> Result<JsValue, JsValue> {
+        serde_wasm_bindgen::to_value(&credential_key_correctness_proof)
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))
     }
 
     #[wasm_bindgen(getter)]
-    pub fn xz_cap(&self) -> JsValue {
-        let credential_key_correctness_proof: ursa::cl::CredentialKeyCorrectnessProof = from_value(serde_wasm_bindgen::to_value(&self._value).unwrap()).unwrap();
-        let value:JsValue = serde_wasm_bindgen::to_value(&credential_key_correctness_proof).unwrap();
-        extract_property::<String>(&value, "xz_cap").unwrap().into_js_result().unwrap()
+    pub fn c(&self) -> Result<JsValue, JsValue> {
+        let credential_key_correctness_proof  = self.get_key_correctness_proof()?;
+        let value = self.to_key_correctness_proof_js(credential_key_correctness_proof)?;
+        Ok(
+            extract_property::<String>(&value, "c").unwrap().into_js_result().unwrap()
+        )
     }
 
     #[wasm_bindgen(getter)]
-    pub fn xr_cap(&self) -> JsValue {
-        let credential_key_correctness_proof: ursa::cl::CredentialKeyCorrectnessProof = from_value(serde_wasm_bindgen::to_value(&self._value).unwrap()).unwrap();
-        let value:JsValue = serde_wasm_bindgen::to_value(&credential_key_correctness_proof).unwrap();
+    pub fn xz_cap(&self) -> Result<JsValue, JsValue> {
+        let credential_key_correctness_proof  = self.get_key_correctness_proof()?;
+        let value = self.to_key_correctness_proof_js(credential_key_correctness_proof)?;
+        Ok(
+            extract_property::<String>(&value, "xz_cap").unwrap().into_js_result().unwrap()
+        )
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn xr_cap(&self) -> Result<JsValue, JsValue> {
+        let credential_key_correctness_proof  = self.get_key_correctness_proof()?;
+        let value = self.to_key_correctness_proof_js(credential_key_correctness_proof)?;
         let xr_cap : Vec<(String, String)> = extract_property(&value, "xr_cap").unwrap();
-        serde_wasm_bindgen::to_value(
+        Ok(
+            serde_wasm_bindgen::to_value(
                 &xr_cap
                     .into_iter()
                     .map(|(s, bn) | {
                         (s,BigNumber::from_dec(bn.as_str()).unwrap())
                     })
                     .collect::<Vec<(String, BigNumber)>>()
-        ).unwrap()
-
+            ).unwrap()
+        )
     }
 }
 

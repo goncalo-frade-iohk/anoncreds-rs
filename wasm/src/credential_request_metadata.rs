@@ -15,7 +15,7 @@ impl CredentialRequestMetadata {
     #[wasm_bindgen(js_name = from)]
     pub fn from(request: JsValue) -> Result<CredentialRequestMetadata, JsValue> {
         let metadata:AnoncredsCredentialRequestMetadata = serde_wasm_bindgen::from_value(request)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialRequestMetadata {
             _metadata: metadata

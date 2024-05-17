@@ -28,7 +28,7 @@ impl CredentialSchema {
             schema_version,
             issuer_id.to_string(),
             AttributeNames::from(attr_names)
-        ).map_err(|e| AnoncredsError::from(e))?;
+        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(
             CredentialSchema {
                 _schema: schema
@@ -39,7 +39,7 @@ impl CredentialSchema {
     #[wasm_bindgen(js_name = from)]
     pub fn from(schema: JsValue) -> Result<CredentialSchema,JsValue > {
         let schema = serde_wasm_bindgen::from_value(schema)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(CredentialSchema {
             _schema: schema
         })

@@ -18,7 +18,7 @@ impl Presentation {
     #[wasm_bindgen(js_name = from)]
     pub fn from(presentation: JsValue) -> Result<Presentation, JsValue> {
         let anoncreds_presentation: AnoncredsPresentation = serde_wasm_bindgen::from_value(presentation)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(Presentation {
             _presentation: anoncreds_presentation
@@ -60,10 +60,10 @@ impl PresentationRequest {
     ) -> Result<PresentationRequest, JsValue> {
 
         let attributes: HashMap<String, AttributeInfo> = serde_wasm_bindgen::from_value(requested_attributes)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         let predicates: HashMap<String, PredicateInfo> = serde_wasm_bindgen::from_value(requested_predicates)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         let payload = PresentationRequestPayload {
             name,
@@ -88,7 +88,7 @@ impl PresentationRequest {
     #[wasm_bindgen(js_name = "from")]
     pub fn from(presentation_request: JsValue) -> Result<PresentationRequest, JsValue> {
         let anoncreds_presentation_request: PresentationRequestPayload = serde_wasm_bindgen::from_value(presentation_request)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(PresentationRequest {
             _presentation_request: AnoncredsPresentationRequest::PresentationRequestV2(anoncreds_presentation_request)

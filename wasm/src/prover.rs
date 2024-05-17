@@ -42,7 +42,7 @@ impl Prover {
             &link_secret._link_secret,
             &link_secret_id,
             &credential_offer._offer
-        ).map_err(|e| AnoncredsError::from(e))?;
+        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         let request = CredentialRequest {
             _request:response.0
@@ -69,7 +69,7 @@ impl Prover {
             &link_secret._link_secret,
             &credential_definition._definition,
             None,
-        ).map_err(|e| AnoncredsError::from(e))?;
+        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok( Credential {
            _credential: mutable_credential
        })
@@ -87,10 +87,10 @@ impl Prover {
         let mut cred_defs = HashMap::new();
 
         let  schema_list : HashMap<SchemaId, Schema> =  from_value(schemas_dict)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         let cred_def_list : HashMap<CredentialDefinitionId, AnoncredsCredentialDefinition> =  from_value(credential_definition_dict)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         for (key, value) in schema_list.iter() {
             schemas.insert(key, value);
@@ -118,7 +118,7 @@ impl Prover {
             &link_secret._link_secret,
             &schemas,
             &cred_defs
-        ).map_err(|e| AnoncredsError::from(e))?;
+        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(
            Presentation {

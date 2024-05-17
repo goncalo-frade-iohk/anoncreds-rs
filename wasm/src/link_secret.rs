@@ -17,7 +17,7 @@ impl LinkSecret {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Result<LinkSecret, JsValue> {
         let link_secret = prover::create_link_secret()
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(
             LinkSecret {
                 _link_secret: link_secret
@@ -36,6 +36,6 @@ impl LinkSecret {
 
     #[wasm_bindgen( js_name = toString)]
     pub fn to_string(&self) -> Result<String, JsValue> {
-        Ok(self._link_secret.0.to_dec() .map_err(|e| AnoncredsError::from(e))?)
+        Ok(self._link_secret.0.to_dec() .map_err(|e| JsValue::from(AnoncredsError::from(e)))?)
     }
 }

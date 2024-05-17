@@ -2,6 +2,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::credential::Credential as AnoncredsCredential;
 use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::from_value;
 use crate::error::AnoncredsError;
 
 #[wasm_bindgen(inspectable)]
@@ -15,8 +16,8 @@ impl Credential {
 
     #[wasm_bindgen( js_name = from)]
     pub fn from(credential: JsValue) -> Result<Credential, JsValue> {
-        let credential:AnoncredsCredential = serde_wasm_bindgen::from_value::<AnoncredsCredential>(credential)
-            .map_err(|e| AnoncredsError::from(e))?;
+        let credential:AnoncredsCredential = from_value::<AnoncredsCredential>(credential)
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(Credential {
             _credential:credential
         })

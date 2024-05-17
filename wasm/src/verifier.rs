@@ -5,6 +5,7 @@ use anoncreds::verifier::verify_presentation;
 use wasm_bindgen::prelude::*;
 use crate::presentation::{Presentation, PresentationRequest};
 use anoncreds::data_types::cred_def::{CredentialDefinition as AnoncredsCredentialDefinition};
+use crate::error::AnoncredsError;
 
 #[wasm_bindgen]
 pub struct Verifier;
@@ -38,10 +39,8 @@ impl Verifier {
         let mut schemas = HashMap::new();
         let mut defs = HashMap::new();
 
-        let  schema_list : HashMap<SchemaId, Schema> =  serde_wasm_bindgen::from_value(schemas_dict)
-            .map_err(|e| JsValue::from_str(&format!("HashMap<&SchemaId, &CredentialSchema> Deserialization error: {}", e)))?;
-        let cred_def_list : HashMap<CredentialDefinitionId, AnoncredsCredentialDefinition> =  serde_wasm_bindgen::from_value(credential_definition_dict)
-            .map_err(|e| JsValue::from_str(&format!("HashMap<&CredentialDefinitionId, &AnoncredsCredentialDefinition> Deserialization error: {}", e)))?;
+        let schema_list : HashMap<SchemaId, Schema> =  serde_wasm_bindgen::from_value(schemas_dict).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
+        let cred_def_list : HashMap<CredentialDefinitionId, AnoncredsCredentialDefinition> =  serde_wasm_bindgen::from_value(credential_definition_dict).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         for (key, value) in schema_list.iter() {
             schemas.insert(key, value);

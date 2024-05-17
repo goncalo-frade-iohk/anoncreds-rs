@@ -39,7 +39,7 @@ impl CredentialRequest {
     #[wasm_bindgen(js_name = from)]
     pub fn from(request: JsValue) -> Result<CredentialRequest, JsValue> {
         let request:AnoncredsCredentialRequest = from_value(request)
-            .map_err(|e| AnoncredsError::from(e))?;
+            .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialRequest {
             _request: request

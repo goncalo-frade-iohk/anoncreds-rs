@@ -1,10 +1,10 @@
+use js_sys::Reflect;
 use serde::{Deserialize, Serialize};
 use serde::de::value::Error;
 use ursa::errors::UrsaCryptoError;
 use wasm_bindgen::prelude::*;
 
 
-#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Errors {
     Error,
@@ -14,12 +14,10 @@ pub enum Errors {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[wasm_bindgen(inspectable)]
 pub struct AnoncredsError {
-    pub(crate) code: Errors,
-    pub(crate) message: String,
+    pub code: Errors,
+    pub message: String,
 }
-
 
 impl From<anoncreds::ErrorKind>  for AnoncredsError {
     fn from(error: anoncreds::ErrorKind) -> AnoncredsError {
@@ -65,17 +63,20 @@ impl From<Error> for AnoncredsError {
     }
 }
 
+impl From<AnoncredsError> for JsValue {
+    fn from(failure: AnoncredsError) -> Self {
+        let error = js_sys::Error::new(&failure.message).into();
+        Reflect::set(&error, &"code".into(), &serde_wasm_bindgen::to_value(&failure.code).unwrap()).unwrap();
+        error
+    }
+}
 
-#[wasm_bindgen]
+impl From<Errors> for JsValue {
+    fn from(failure: Errors) -> Self {
+        serde_wasm_bindgen::to_value(&failure).unwrap()
+    }
+}
+
 impl AnoncredsError {
-    #[wasm_bindgen(getter)]
-    pub fn code(&self) -> Errors {
-        self.code.clone()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn message(&self) -> String {
-        self.message.to_string()
-    }
 
 }
