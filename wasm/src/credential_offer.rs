@@ -1,6 +1,7 @@
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_offer::CredentialOffer as AnoncredsCredentialOffer;
+use crate::utils::fix_js_value;
 
 #[wasm_bindgen(inspectable)]
 pub struct CredentialOffer {
@@ -13,7 +14,7 @@ impl CredentialOffer {
     #[wasm_bindgen(js_name = from)]
     pub fn from(offer: JsValue) -> Self {
         CredentialOffer {
-            _offer: serde_wasm_bindgen::from_value(offer).expect("Unable to deserialize Credential Offer")
+            _offer: serde_wasm_bindgen::from_value(fix_js_value(offer)).expect("Unable to deserialize Credential Offer")
         }
     }
 

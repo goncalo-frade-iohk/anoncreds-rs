@@ -2,9 +2,10 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_request::CredentialRequestMetadata as AnoncredsCredentialRequestMetadata;
 use crate::error::AnoncredsError;
+use crate::utils::fix_js_value;
 
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
 pub struct CredentialRequestMetadata {
     pub(crate) _metadata: AnoncredsCredentialRequestMetadata
 }
@@ -14,7 +15,7 @@ impl CredentialRequestMetadata {
 
     #[wasm_bindgen(js_name = from)]
     pub fn from(request: JsValue) -> Result<CredentialRequestMetadata, JsValue> {
-        let metadata:AnoncredsCredentialRequestMetadata = serde_wasm_bindgen::from_value(request)
+        let metadata:AnoncredsCredentialRequestMetadata = serde_wasm_bindgen::from_value(fix_js_value(request))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialRequestMetadata {

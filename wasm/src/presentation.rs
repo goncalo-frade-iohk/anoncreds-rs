@@ -6,6 +6,7 @@ use anoncreds::data_types::pres_request::{AttributeInfo, PredicateInfo, Presenta
 use serde::{Deserialize, Serialize};
 use anoncreds::data_types::presentation::Presentation as AnoncredsPresentation;
 use crate::error::AnoncredsError;
+use crate::utils::fix_js_value;
 
 #[wasm_bindgen(inspectable)]
 #[derive(Debug, Deserialize, Serialize)]
@@ -17,7 +18,8 @@ pub struct Presentation {
 impl Presentation {
     #[wasm_bindgen(js_name = from)]
     pub fn from(presentation: JsValue) -> Result<Presentation, JsValue> {
-        let anoncreds_presentation: AnoncredsPresentation = serde_wasm_bindgen::from_value(presentation)
+        serde_wasm_bindgen::Serializer::json_compatible();
+        let anoncreds_presentation: AnoncredsPresentation = serde_wasm_bindgen::from_value(fix_js_value(presentation))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(Presentation {
@@ -87,7 +89,9 @@ impl PresentationRequest {
 
     #[wasm_bindgen(js_name = "from")]
     pub fn from(presentation_request: JsValue) -> Result<PresentationRequest, JsValue> {
-        let anoncreds_presentation_request: PresentationRequestPayload = serde_wasm_bindgen::from_value(presentation_request)
+
+
+        let anoncreds_presentation_request: PresentationRequestPayload = serde_wasm_bindgen::from_value(fix_js_value(presentation_request))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(PresentationRequest {

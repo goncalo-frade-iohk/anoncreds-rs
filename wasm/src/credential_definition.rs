@@ -7,11 +7,11 @@ use serde_wasm_bindgen::from_value;
 use ursa::bn::BigNumber;
 use wasm_bindgen::__rt::IntoJsResult;
 use crate::error::AnoncredsError;
-use crate::utils::extract_property;
+use crate::utils::{extract_property, fix_js_value};
 
 
 
-#[wasm_bindgen( inspectable)]
+#[wasm_bindgen(inspectable)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CredentialDefinition {
     pub(crate) _definition: AnoncredsCredentialDefinition
@@ -29,7 +29,7 @@ impl CredentialDefinition {
 
     #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition: JsValue) -> Result<CredentialDefinition, JsValue> {
-        let definition: AnoncredsCredentialDefinition = from_value(credential_definition)
+        let definition: AnoncredsCredentialDefinition = from_value(fix_js_value(credential_definition))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialDefinition {
@@ -81,7 +81,7 @@ impl CredentialDefinitionPrivate {
 
     #[wasm_bindgen( js_name = from)]
     pub fn from(credential_definition_private: JsValue) -> Result<CredentialDefinitionPrivate, JsValue> {
-        let value:AnoncredsCredentialDefinitionPrivate = from_value(credential_definition_private)
+        let value:AnoncredsCredentialDefinitionPrivate = from_value(fix_js_value(credential_definition_private))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
 
@@ -104,15 +104,9 @@ pub struct CredentialKeyCorrectnessProof {
 #[wasm_bindgen]
 impl CredentialKeyCorrectnessProof {
 
-    pub(crate) fn new(value: ursa::cl::CredentialKeyCorrectnessProof) -> Self {
-        CredentialKeyCorrectnessProof {
-            _value: value
-        }
-    }
-
     #[wasm_bindgen( js_name = from)]
     pub fn from(key_correctness_proof: JsValue) -> Result<CredentialKeyCorrectnessProof, JsValue> {
-        let value:ursa::cl::CredentialKeyCorrectnessProof = from_value(key_correctness_proof)
+        let value:ursa::cl::CredentialKeyCorrectnessProof = from_value(fix_js_value(key_correctness_proof))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(CredentialKeyCorrectnessProof {
             _value: value
@@ -121,7 +115,7 @@ impl CredentialKeyCorrectnessProof {
 
     fn get_key_correctness_proof(&self) -> Result<ursa::cl::CredentialKeyCorrectnessProof, JsValue> {
         let key_correctness = serde_wasm_bindgen::to_value(&self._value).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
-        from_value(key_correctness).map_err(|e| JsValue::from(AnoncredsError::from(e)))
+        from_value(fix_js_value(key_correctness)).map_err(|e| JsValue::from(AnoncredsError::from(e)))
     }
 
     fn to_key_correctness_proof_js(&self, credential_key_correctness_proof: ursa::cl::CredentialKeyCorrectnessProof) -> Result<JsValue, JsValue> {
@@ -199,7 +193,8 @@ impl CredentialDefinitionPrivateResponse {
 
     #[wasm_bindgen(getter, js_name="keyCorrectnessProof")]
     pub fn key_correctness_proof(&self) -> CredentialKeyCorrectnessProof  {
-        let ursa_key_correctness_proof:ursa::cl::CredentialKeyCorrectnessProof  = from_value(serde_wasm_bindgen::to_value(&self.credential_key_correctness_proof._value).unwrap()).unwrap();
+        let js_value = serde_wasm_bindgen::to_value(&self.credential_key_correctness_proof._value).unwrap();
+        let ursa_key_correctness_proof:ursa::cl::CredentialKeyCorrectnessProof  = from_value(fix_js_value(js_value)).unwrap();
         CredentialKeyCorrectnessProof{
             _value: ursa_key_correctness_proof
         }

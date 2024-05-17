@@ -3,7 +3,9 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::schema::{Schema as AnoncredsSchema, Schema};
 use anoncreds::types::AttributeNames;
 use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::from_value;
 use crate::error::{AnoncredsError};
+use crate::utils::fix_js_value;
 
 
 #[wasm_bindgen(inspectable)]
@@ -38,8 +40,14 @@ impl CredentialSchema {
 
     #[wasm_bindgen(js_name = from)]
     pub fn from(schema: JsValue) -> Result<CredentialSchema,JsValue > {
-        let schema = serde_wasm_bindgen::from_value(schema)
+
+
+
+        let schema = from_value(fix_js_value(schema))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
+
+
+
         Ok(CredentialSchema {
             _schema: schema
         })

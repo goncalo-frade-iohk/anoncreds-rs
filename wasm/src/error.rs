@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde::de::value::Error;
 use ursa::errors::UrsaCryptoError;
 use wasm_bindgen::prelude::*;
+use crate::utils::extract_property;
 
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -50,6 +51,19 @@ impl From<serde_wasm_bindgen::Error> for AnoncredsError {
         AnoncredsError {
             code: Errors::SerializationError,
             message:format!("Serialization {}", error),
+        }
+    }
+}
+
+impl From<JsValue> for AnoncredsError {
+    fn from(error: JsValue) -> AnoncredsError {
+
+        let code = extract_property::<Errors>(&error, "code").expect("NO");
+        let message = extract_property::<String>(&error, "message").expect("NO2");
+
+        AnoncredsError {
+            code,
+            message,
         }
     }
 }

@@ -3,32 +3,10 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use anoncreds::data_types::cred_request::CredentialRequest as AnoncredsCredentialRequest;
 use serde_wasm_bindgen::from_value;
 use crate::error::AnoncredsError;
-use crate::utils::extract_property;
+use crate::utils::{extract_property, fix_js_value};
 
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_APPEND_CONTENT: &'static str = r#"
-export class CredentialRequest {
-    free(): void;
-    static from(request: any): CredentialRequest;
-    readonly cred_def_id: string;
-    readonly blinded_ms: {
-        u: string;
-        hidden_attributes: string[];
-        committed_attributes: Record<string, any>; // supposed to be empty
-    };
-    readonly blinded_ms_correctness_proof:{
-        c: string;
-        v_dash_cap: string;
-        m_caps: Record<string, string>;
-        r_caps: Record<string, any>; // supposed to be empty
-      } | undefined
-    readonly nonce: string;
-    readonly entropy: string;
-}
-"#;
-
-#[wasm_bindgen(skip_typescript, inspectable)]
+#[wasm_bindgen(inspectable)]
 pub struct CredentialRequest {
     pub(crate) _request: AnoncredsCredentialRequest
 }
@@ -38,7 +16,7 @@ impl CredentialRequest {
 
     #[wasm_bindgen(js_name = from)]
     pub fn from(request: JsValue) -> Result<CredentialRequest, JsValue> {
-        let request:AnoncredsCredentialRequest = from_value(request)
+        let request:AnoncredsCredentialRequest = from_value(fix_js_value(request))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         Ok(CredentialRequest {
