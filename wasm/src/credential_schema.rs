@@ -7,8 +7,26 @@ use serde_wasm_bindgen::from_value;
 use crate::error::{AnoncredsError};
 use crate::utils::fix_js_value;
 
+#[wasm_bindgen(typescript_custom_section)]
+const TS_APPEND_CONTENT: &'static str = r#"
+export type CredentialSchemaType = {
+    readonly issuerId: string;
+    readonly name: string;
+    readonly version: string;
+    readonly attrNames: string[];
+}
+export class CredentialSchema implements CredentialSchemaType {
+    free(): void;
+    static from(definition: CredentialSchemaType): CredentialSchema;
+    readonly issuerId: string;
+    readonly name: string;
+    readonly version: string;
+    readonly attrNames: string[];
+    toJSON(): CredentialSchemaType
+}
+"#;
 
-#[wasm_bindgen(inspectable)]
+#[wasm_bindgen(skip_typescript)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CredentialSchema {
     pub(crate) _schema: AnoncredsSchema
@@ -38,15 +56,17 @@ impl CredentialSchema {
         )
     }
 
+
+    #[wasm_bindgen(js_name="toJSON")]
+    pub fn to_json(&self) -> JsValue {
+        fix_js_value(serde_wasm_bindgen::to_value(&self._schema).unwrap())
+    }
+
     #[wasm_bindgen(js_name = from)]
-    pub fn from(schema: JsValue) -> Result<CredentialSchema,JsValue > {
+    pub fn from(schema: &JsValue) -> Result<CredentialSchema,JsValue > {
 
-
-
-        let schema = from_value(fix_js_value(schema))
+        let schema = from_value(fix_js_value(schema.clone()))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
-
-
 
         Ok(CredentialSchema {
             _schema: schema
@@ -73,5 +93,6 @@ impl CredentialSchema {
     pub fn attr_names(&self) -> Vec<String> {
         self._schema.attr_names.0.clone()
     }
+
 
 }

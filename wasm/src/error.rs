@@ -57,10 +57,8 @@ impl From<serde_wasm_bindgen::Error> for AnoncredsError {
 
 impl From<JsValue> for AnoncredsError {
     fn from(error: JsValue) -> AnoncredsError {
-
         let code = extract_property::<Errors>(&error, "code").expect("NO");
         let message = extract_property::<String>(&error, "message").expect("NO2");
-
         AnoncredsError {
             code,
             message,
@@ -89,8 +87,4 @@ impl From<Errors> for JsValue {
     fn from(failure: Errors) -> Self {
         serde_wasm_bindgen::to_value(&failure).unwrap()
     }
-}
-
-impl AnoncredsError {
-
 }

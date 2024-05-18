@@ -7,6 +7,7 @@ use crate::credential_request_metadata::CredentialRequestMetadata;
 use crate::credential_request_response::CreateCredentialRequestResponse;
 use crate::link_secret::LinkSecret;
 use anoncreds::data_types::cred_def::{CredentialDefinition as AnoncredsCredentialDefinition, CredentialDefinitionId};
+use anoncreds::data_types::nonce::Nonce;
 use anoncreds::data_types::schema::{Schema, SchemaId};
 use anoncreds::types::PresentCredentials;
 use serde_wasm_bindgen::from_value;
@@ -15,9 +16,21 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::error::AnoncredsError;
 use crate::presentation::{Presentation, PresentationRequest};
 
+
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(typescript_type = "SchemasDict")]
+    pub type SchemasDict;
+
+    #[wasm_bindgen(typescript_type = "DefinitionsDict")]
+    pub type DefinitionsDict;
+}
+
+
+
 #[wasm_bindgen]
 pub struct Prover;
-
 
 #[wasm_bindgen]
 impl Prover {
@@ -29,14 +42,13 @@ impl Prover {
 
     #[wasm_bindgen( js_name = createCredentialRequest)]
     pub fn create_credential_request(
-        entropy: String,
-        credential_definition: CredentialDefinition,
-        link_secret: LinkSecret,
+        credential_definition: &CredentialDefinition,
+        link_secret: &LinkSecret,
         link_secret_id: String,
-        credential_offer: CredentialOffer
+        credential_offer: &CredentialOffer
     ) -> Result<CreateCredentialRequestResponse, JsValue> {
         let response = anoncreds::prover::create_credential_request(
-            Some(&entropy),
+            Some(Nonce::new().unwrap().as_native().to_dec().unwrap().as_str()),
             None,
             &credential_definition._definition,
             &link_secret._link_secret,
@@ -57,10 +69,10 @@ impl Prover {
 
     #[wasm_bindgen( js_name = processCredential)]
     pub fn process_credential(
-        credential: Credential,
-        credential_request_metadata: CredentialRequestMetadata,
-        link_secret: LinkSecret,
-        credential_definition: CredentialDefinition,
+        credential: &Credential,
+        credential_request_metadata: &CredentialRequestMetadata,
+        link_secret: &LinkSecret,
+        credential_definition: &CredentialDefinition,
     ) -> Result<Credential, JsValue> {
         let mut mutable_credential = credential._credential.try_clone().unwrap();
         anoncreds::prover::process_credential(
@@ -78,18 +90,18 @@ impl Prover {
     #[wasm_bindgen( js_name = createPresentation)]
     pub fn create_presentation(
         presentation_request: PresentationRequest,
-        credential: Credential,
-        link_secret: LinkSecret,
-        schemas_dict: JsValue,
-        credential_definition_dict: JsValue
+        credential: &Credential,
+        link_secret: &LinkSecret,
+        schemas_dict: &SchemasDict,
+        credential_definition_dict: &DefinitionsDict
     ) -> Result<Presentation, JsValue>{
         let mut schemas = HashMap::new();
         let mut cred_defs = HashMap::new();
 
-        let  schema_list : HashMap<SchemaId, Schema> =  from_value(schemas_dict)
+        let  schema_list : HashMap<SchemaId, Schema> =  from_value(schemas_dict.obj.clone())
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
-        let cred_def_list : HashMap<CredentialDefinitionId, AnoncredsCredentialDefinition> =  from_value(credential_definition_dict)
+        let cred_def_list : HashMap<CredentialDefinitionId, AnoncredsCredentialDefinition> =  from_value(credential_definition_dict.obj.clone())
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
 
         for (key, value) in schema_list.iter() {

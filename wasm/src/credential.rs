@@ -6,7 +6,47 @@ use serde_wasm_bindgen::from_value;
 use crate::error::AnoncredsError;
 use crate::utils::fix_js_value;
 
-#[wasm_bindgen(inspectable)]
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_APPEND_CONTENT: &'static str = r#"
+export interface Credential_Value {
+    encoded: string;
+    raw: string;
+}
+export type CrerdentialSignatureType = {
+    p_credential: {
+        m_2: string;
+        a: string;
+        e: string;
+        v: string;
+    };
+}
+export type CredentialType = {
+    readonly schema_id: string;
+    readonly cred_def_id: string;
+    readonly values: Record<string, Credential_Value>;
+    readonly signature: CrerdentialSignatureType;
+    readonly signature_correctness_proof: {
+        c: string;
+        se: string;
+    };
+}
+export class Credential implements CredentialType {
+    free(): void;
+    static from(credential: CredentialType): Credential;
+    toJSON(): CredentialType
+    readonly schema_id: string;
+    readonly cred_def_id: string;
+    readonly values: Record<string, Credential_Value>;
+    readonly signature:CrerdentialSignatureType;
+    readonly signature_correctness_proof: {
+        c: string;
+        se: string;
+    };
+}
+"#;
+
+#[wasm_bindgen(skip_typescript)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Credential {
     pub(crate) _credential: AnoncredsCredential
@@ -15,9 +55,14 @@ pub struct Credential {
 #[wasm_bindgen]
 impl Credential {
 
+    #[wasm_bindgen(js_name="toJSON")]
+    pub fn to_json(&self) -> JsValue {
+        fix_js_value(serde_wasm_bindgen::to_value(&self._credential).unwrap())
+    }
+
     #[wasm_bindgen( js_name = from)]
-    pub fn from(credential: JsValue) -> Result<Credential, JsValue> {
-        let credential:AnoncredsCredential = from_value::<AnoncredsCredential>(fix_js_value(credential))
+    pub fn from(credential: &JsValue) -> Result<Credential, JsValue> {
+        let credential:AnoncredsCredential = from_value::<AnoncredsCredential>(fix_js_value(credential.clone()))
             .map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
         Ok(Credential {
             _credential:credential
@@ -36,16 +81,16 @@ impl Credential {
 
     #[wasm_bindgen(getter)]
     pub fn values(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self._credential.values).unwrap()
+        fix_js_value(serde_wasm_bindgen::to_value(&self._credential.values).unwrap())
     }
 
     #[wasm_bindgen(getter)]
     pub fn signature(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self._credential.signature).unwrap()
+        fix_js_value(serde_wasm_bindgen::to_value(&self._credential.signature).unwrap())
     }
 
     #[wasm_bindgen(getter)]
     pub fn signature_correctness_proof(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self._credential.signature_correctness_proof).unwrap()
+        fix_js_value(serde_wasm_bindgen::to_value(&self._credential.signature_correctness_proof).unwrap())
     }
 }

@@ -9,6 +9,19 @@ use crate::credential_request::CredentialRequest;
 use anoncreds::data_types::cred_def::CredentialKeyCorrectnessProof as AnoncredsCredentialKeyCorrectnessProof;
 use serde::{Deserialize, Serialize};
 
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_APPEND_CONTENT: &'static str = r#"
+export type CredentialIssueValues = Record<string, string | number | boolean>;
+"#;
+
+#[wasm_bindgen]
+extern "C" {
+
+    #[wasm_bindgen(typescript_type = "CredentialIssueValues")]
+    pub type CredentialIssueValues;
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 enum Value {
@@ -95,21 +108,19 @@ impl Issuer {
 
     #[wasm_bindgen(js_name = "createCredential")]
     pub fn create_credential(
-        credential_definition: CredentialDefinition,
-        credential_definition_private: CredentialDefinitionPrivate,
-        credential_offer: CredentialOffer,
-        credential_request: CredentialRequest,
-        values: JsValue
+        credential_definition: &CredentialDefinition,
+        credential_definition_private: &CredentialDefinitionPrivate,
+        credential_offer: &CredentialOffer,
+        credential_request: &CredentialRequest,
+        values: &CredentialIssueValues
     ) -> Result<Credential, JsValue> {
-
-        let map: HashMap<String, Value> = serde_wasm_bindgen::from_value(values)?;
+        let values_js: JsValue = values.into();
+        let map: HashMap<String, Value> = serde_wasm_bindgen::from_value(values_js)?;
         let mut credential_values = MakeCredentialValues::default();
-
         for (key, value) in map.iter() {
             credential_values.add_raw(key, value.to_string())
                 .map_err(|e| JsValue::from_str(&format!("Could not add_raw value error: {}", e)))?;
         }
-
         let credential = anoncreds::issuer::create_credential(
             &credential_definition._definition,
             &credential_definition_private._value,
@@ -120,10 +131,8 @@ impl Issuer {
             None,
             None
         ) .map_err(|e| JsValue::from_str(&format!("Could not create credential error: {}", e)))?;
-
         Ok(Credential {
             _credential: credential
         })
     }
-
 }
