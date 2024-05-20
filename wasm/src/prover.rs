@@ -74,7 +74,7 @@ impl Prover {
         link_secret: &LinkSecret,
         credential_definition: &CredentialDefinition,
     ) -> Result<Credential, JsValue> {
-        Ok(credential.process(credential_request_metadata, link_secret, credential_definition))
+        credential.process(credential_request_metadata, link_secret, credential_definition)
     }
 
     #[wasm_bindgen( js_name = createPresentation)]

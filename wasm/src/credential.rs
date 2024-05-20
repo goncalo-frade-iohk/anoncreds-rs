@@ -103,7 +103,7 @@ impl Credential {
         credential_request_metadata: &CredentialRequestMetadata,
         link_secret: &LinkSecret,
         credential_definition: &CredentialDefinition
-    ) -> Credential {
+    ) -> Result<Credential, JsValue> {
         let mut mutable_credential = self._credential.try_clone().unwrap();
         anoncreds::prover::process_credential(
             &mut mutable_credential,
@@ -112,10 +112,9 @@ impl Credential {
             &credential_definition._definition,
             None,
         ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
-
-        Credential {
+        Ok(Credential {
             _credential:mutable_credential
-        }
+        })
     }
 
 
