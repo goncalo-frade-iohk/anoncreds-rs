@@ -5,6 +5,9 @@ use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::from_value;
 use crate::error::AnoncredsError;
 use crate::utils::fix_js_value;
+use crate::credential_request_metadata::CredentialRequestMetadata;
+use crate::link_secret::LinkSecret;
+use crate::credential_definition::CredentialDefinition;
 
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -93,4 +96,27 @@ impl Credential {
     pub fn signature_correctness_proof(&self) -> JsValue {
         fix_js_value(serde_wasm_bindgen::to_value(&self._credential.signature_correctness_proof).unwrap())
     }
+
+    #[wasm_bindgen]
+    pub fn process(
+        &self,
+        credential_request_metadata: &CredentialRequestMetadata,
+        link_secret: &LinkSecret,
+        credential_definition: &CredentialDefinition
+    ) -> Credential {
+        let mut mutable_credential = self._credential.try_clone().unwrap();
+        anoncreds::prover::process_credential(
+            &mut mutable_credential,
+            &credential_request_metadata._metadata,
+            &link_secret._link_secret,
+            &credential_definition._definition,
+            None,
+        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
+
+        Credential {
+            _credential:mutable_credential
+        }
+    }
+
+
 }

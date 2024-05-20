@@ -74,17 +74,7 @@ impl Prover {
         link_secret: &LinkSecret,
         credential_definition: &CredentialDefinition,
     ) -> Result<Credential, JsValue> {
-        let mut mutable_credential = credential._credential.try_clone().unwrap();
-        anoncreds::prover::process_credential(
-            &mut mutable_credential,
-            &credential_request_metadata._metadata,
-            &link_secret._link_secret,
-            &credential_definition._definition,
-            None,
-        ).map_err(|e| JsValue::from(AnoncredsError::from(e)))?;
-        Ok( Credential {
-           _credential: mutable_credential
-       })
+        Ok(credential.process(credential_request_metadata, link_secret, credential_definition))
     }
 
     #[wasm_bindgen( js_name = createPresentation)]
