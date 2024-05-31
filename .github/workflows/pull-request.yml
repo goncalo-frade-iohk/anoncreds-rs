@@ -14,11 +14,11 @@ env:
   ATALA_GITHUB_ACTOR: ${{ secrets.ATALA_GITHUB_ACTOR }}
   ATALA_GITHUB_TOKEN: ${{ secrets.ATALA_GITHUB_TOKEN }}
 
-on: [pull_request]
+on: [ pull_request ]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: "Checkout the repo"
         uses: actions/checkout@v4
@@ -39,11 +39,6 @@ jobs:
       - name: "Test Kotlin code is properly formatted"
         working-directory: ./anoncred-kmm
         run: ./gradlew ktlintCheck
-
-      - name: "Install Homebrew"
-        run: >
-          /bin/bash -c "$(curl -fsSL
-          https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
       - name: "Install autoconf, automake, libtool"
         run: |
